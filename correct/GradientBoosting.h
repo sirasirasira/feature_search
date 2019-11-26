@@ -2,10 +2,9 @@
 
 #include "MyInclude.h"
 
-class TreeEnsemble {
+class GradientBoosting {
 	public:
-		void runRandomForest();
-		void runGradientBoosting();
+		void run();
 		void incGainCount() {
 			gain_count++;
 		}

@@ -10,9 +10,6 @@ struct Setting {
 	double shrinkage = 1.0;
 	double needed_impurity_decrease = 0.0;
 	size_t max_depth = -1;
-	double data_used = 1.0;
-	double feature_used = 1.0;
-	constexpr static bool random_forest = false;
 
 	void print() {
 		cout
@@ -22,8 +19,6 @@ struct Setting {
 			<< " shrinkage " << shrinkage
 			<< " needed_impurity_decrease " << needed_impurity_decrease
 			<< " max_depth " << max_depth
-			<< " data_used " << data_used
-			<< " feature_used " << feature_used
 			<< " random_forest " << random_forest
 			<< endl;
 	}

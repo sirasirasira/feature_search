@@ -1,5 +1,5 @@
-#include "TreeEnsemble.h"
-#define CLASS TreeEnsemble
+#include "GradientBoosting.h"
+#define CLASS GradientBoosting
 
 extern Setting setting;
 #include "Database.h"
