@@ -1,2 +1,10 @@
-./gtb_correct -x 3 -t 3 -d 2 ./data/nci/nci_train ./data/nci/nci_test
+if [ $# -ne 1 ]
+then
+	echo "please input dataset name"
+	exit
+fi
+
+x=$1
+
+./gtb_correct -x ${x} -t 1 -d 1 ../data/nci/nci_train ../data/nci/nci_test
 

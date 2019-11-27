@@ -1,6 +1,6 @@
 .objs/main.o: main.cpp MyInclude.h IncludeLib.h Structures.h Setting.h \
- Dice.h Debug.h Database.h TreeEnsemble.h Planter.h Spliter.h \
- StructuresSpliter.h StructuresGspan.h Gspan.h IsMin.h Evaluater.h
+ Dice.h Debug.h Database.h GradientBoosting.h Planter.h Spliter.h \
+ StructuresGspan.h Gspan.h IsMin.h Finder.h Evaluater.h
 
 MyInclude.h:
 
@@ -16,18 +16,18 @@ Debug.h:
 
 Database.h:
 
-TreeEnsemble.h:
+GradientBoosting.h:
 
 Planter.h:
 
 Spliter.h:
-
-StructuresSpliter.h:
 
 StructuresGspan.h:
 
 Gspan.h:
 
 IsMin.h:
+
+Finder.h:
 
 Evaluater.h:

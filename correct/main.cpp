@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 	cout << "train_file : " << train_filename << " , size " << db.gdata.num_train << endl;
 	cout << "test_file : " << test_filename << " , size " << db.gdata.num_test << endl;
 
-	makeYs();
+	db.ys.resize(db.gdata.num_train);
 
 	if (setting.minsup == 0) {
 		setting.minsup = 1;
@@ -145,7 +145,8 @@ int main(int argc, char** argv) {
 	}
 	setting.print();
 
-	db.spliter.prepare(allTargets());
+	db.gspan.minsup = setting.minsup;
+	db.gspan.maxpat = setting.maxpat;
 	db.gradient_boosting.run();
 
 	std::cout << "\e[38;5;0m\e[48;5;40m --- end ---  \e[m" << std::endl; // debug

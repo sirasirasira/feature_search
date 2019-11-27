@@ -6,30 +6,13 @@
 #include "IsMin.h"
 
 class Gspan {
-
-	struct CacheRecord {
-		GraphToTracers g2tracers;
-		vector<std::pair<DFSCode, vector<ID>>> childs;
-		double feature_importance;
-		CacheRecord() {
-			feature_importance = 0;
-		}
-		CacheRecord(GraphToTracers g2tracers, vector<std::pair<DFSCode, vector<ID>>> childs)
-			: g2tracers(g2tracers), childs(childs) {
-			feature_importance = 0;
-		}
-	};
-
 	public:
+		Gspan(map<Pattern, CacheRecord>& _cache, vector<Pattern>& _e1patterns) : cache(_cache), e1patterns(_e1patterns) {}
 		size_t minsup;
 		size_t maxpat;
 
 		void run();
 		void run(Pattern pattern);
-
-		inline const map<Pattern, CacheRecord>& getCache() {
-			return cache;
-		}
 
 		inline void reportCache() {
 			std::cout << "Report Cache Infomation" << std::endl;
@@ -38,7 +21,7 @@ class Gspan {
 			}
 		}
 
-		inline void updataFeatureImportance(const Pattern& pattern, double importance) {
+		inline void updateFeatureImportance(const Pattern& pattern, double importance) {
 			cache.at(pattern).feature_importance += importance;
 		}
 
@@ -68,10 +51,10 @@ class Gspan {
 		Spliter* spliter;
 		Pattern pattern;
 		IsMin is_min;
-		map<Pattern, CacheRecord> cache; // inserted data must keep pointer
+		map<Pattern, CacheRecord>& cache; // inserted data must keep pointer
+		vector<Pattern>& e1patterns;
 
 		void edgeGrow();
-		void oneedgeGrow();
 		size_t support(GraphToTracers& g2tracers);
 		bool check_pattern(Pattern pattern, GraphToTracers& g2tracers);
 		void report(GraphToTracers& tracers);

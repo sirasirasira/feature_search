@@ -3,10 +3,11 @@
 #include "Structures.h"
 #include "Setting.h"
 
-#include "TreeEnsemble.h"
+#include "GradientBoosting.h"
 #include "Planter.h"
 #include "Spliter.h"
 #include "Gspan.h"
+#include "Finder.h"
 #include "Evaluater.h"
 
 struct Database {
@@ -15,9 +16,10 @@ struct Database {
 	vector<double> ys; // (gradient boosting) residual error, (random forest) raw ys 
 	vector<double> y_predictions;
 
-	TreeEnsemble tree_ensemble;
+	GradientBoosting gradient_boosting;
 	Planter planter;
 	Spliter spliter;
-	Gspan gspan;
+	Gspan gspan = Gspan(spliter.getCache(), spliter.gete1Patterns());
+	Finder finder;
 	Evaluater eva;
 };

@@ -71,11 +71,7 @@ namespace Calculator {
 	}
 
 	inline double imp(const vector<double>& ys, const vector<ID>& train_targets) {
-		if (setting.random_forest) {
-			return TSD(ys, train_targets);
-		} else {
-			return TSS(ys, train_targets);
-		}
+		return TSS(ys, train_targets);
 	}
 
 	// assert raw is sorted
@@ -92,7 +88,7 @@ namespace Calculator {
 
 	// assert raw_* is sorted
 	inline double score(const vector<double>& ys, const vector<ID>& raw_targets, const vector<ID>& raw_posi) {
-		db.tree_ensemble.incGainCount();
+		db.gradient_boosting.incGainCount();
 		vector<ID> targets = trainOnly(raw_targets);
 		vector<ID> posi = setIntersec(targets, raw_posi); // TODO
 		if (posi.size() < db.gspan.minsup) {
@@ -115,7 +111,7 @@ namespace Calculator {
 
 	// assert raw_* is sorted
 	inline double bound(const vector<double>& ys, const vector<ID>& raw_targets, const vector<ID>& raw_posi) {
-		db.tree_ensemble.incBoundCount();
+		db.gradient_boosting.incBoundCount();
 		double min_score = DBL_MAX;
 		vector<ID> targets = trainOnly(raw_targets);
 		vector<ID> posi = setIntersec(targets, raw_posi); // TODO

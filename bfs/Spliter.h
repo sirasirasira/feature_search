@@ -1,16 +1,30 @@
 #pragma once
 
 #include "MyInclude.h"
-#include "StructuresSpliter.h"
+#include "StructuresGspan.h"
+
+struct CacheRecord {
+	GraphToTracers g2tracers;
+	vector<DFSCode> childs;
+	double feature_importance;
+	bool scan;
+	CacheRecord() {
+		feature_importance = 0;
+		scan = false;
+	}
+	CacheRecord(GraphToTracers g2tracers, vector<DFSCode> childs)
+		: g2tracers(g2tracers), childs(childs){
+			feature_importance = 0;
+			scan = false;
+		}
+};
 
 class Spliter {
-
 	public:
 		void prepare(const vector<ID>& _targets);
 		vector<ID> run(const vector<ID>& _targets);
 		void update(Pattern pattern, vector<ID> posi);
-		void push_pq_enum(double bound, PQRecord pqrecord);
-		bool isBounded(vector<ID> posi);
+		void push_pq_bound(double bound, Pattern pattern);
 		inline bool valid() {
 			return valid_flg;
 		}
@@ -25,6 +39,14 @@ class Spliter {
 		inline vector<ID> gettargets() {
 			return  targets;
 		}
+		inline vector<Pattern>& gete1Patterns() {
+			return e1patterns;
+		}
+
+		inline map<Pattern, CacheRecord>& getCache() {
+			return cache;
+		}
+
 
 	private:
 		bool valid_flg;
@@ -32,12 +54,11 @@ class Spliter {
 		double parent_score;
 		double min_score;
 		Pattern best_pattern;
-		priority_queue<std::pair<double, PQRecord>, vector<std::pair<double, PQRecord>>, std::greater<std::pair<double, PQRecord>>> pq_cache;
-		priority_queue<std::pair<double, PQRecord>, vector<std::pair<double, PQRecord>>, std::greater<std::pair<double, PQRecord>>> pq_enum;
+		map<Pattern, CacheRecord> cache;
+		vector<Pattern> e1patterns;
+		priority_queue<std::pair<double, Pattern>, vector<std::pair<double, Pattern>>, std::greater<std::pair<double, Pattern>>> pq_bound;
 
 		void initMinScore();
-		void searchCache();
-		inline bool isFrontier(const Pattern& pattern, const Pattern& bef_pattern);
-		void searchEnum();
+		void search();
 };
 

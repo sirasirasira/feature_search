@@ -86,9 +86,6 @@ void CLASS::search_childs(const Pattern& pattern) {
 }
 
 void CLASS::update(Pattern pattern, vector<ID> posi) {
-	if (Dice::p(setting.feature_used) == false) {
-		return;
-	}
 	double score = Calculator::score(db.ys, targets, posi);
 	if (score < min_score ) { // old pattern may be used (this func is called from gspan)
 		min_score = score;

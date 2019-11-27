@@ -30,20 +30,16 @@ void CLASS::run() {
 		if (!check_pattern(pattern, itr->second)) {
 			continue;
 		}
-		vector<std::pair<DFSCode, vector<ID>>> childs;
+		e1patterns.push_back(pattern);
+		vector<DFSCode> childs;
 		cache.insert({pattern, CacheRecord(itr->second, childs)});
-		vector<ID> posi = getPosiIds(itr->second);
-		spliter->update(pattern, posi);
-		if (!spliter->isBounded(posi)) {
-			edgeGrow();
-		}
 	}
 }
 
 void CLASS::run(Pattern _pattern) {
 	// std::cout << "debug frontier | " << _pattern  << std::endl; // debug
 	pattern = _pattern;
-	oneedgeGrow();
+	edgeGrow();
 }
 
 size_t CLASS::support(GraphToTracers& g2tracers) {
@@ -91,15 +87,17 @@ void CLASS::edgeGrow() {
 			pattern.pop_back();
 			continue;
 		}
-		vector<std::pair<DFSCode, vector<ID>>> childs;
+		// cache insert
+		vector<DFSCode> childs;
 		cache.insert({pattern, CacheRecord(itr->second, childs)});
 		vector<ID> posi = getPosiIds(itr->second);
 		spliter->update(pattern, posi);
-		if (!spliter->isBounded(posi) and pattern.size() < maxpat) {
-			edgeGrow();
-		}
+		// pq_bound insert
+		double min_bound = Calculator::bound(db.ys, spliter->gettargets(), posi);
+		spliter->push_pq_bound(min_bound, pattern);
+
 		pattern.pop_back();
-		cache[pattern].childs.push_back(std::make_pair(dcode, posi));
+		cache[pattern].childs.push_back(dcode);
 	}
 
 	for (auto itr = f_heap.begin(); itr != f_heap.end(); itr++) {
@@ -112,71 +110,23 @@ void CLASS::edgeGrow() {
 				pattern.pop_back();
 				continue;
 			}
-			vector<std::pair<DFSCode, vector<ID>>> childs;
+			// cache insert
+			vector<DFSCode> childs;
 			cache.insert({pattern, CacheRecord(itr2->second, childs)});
 			vector<ID> posi = getPosiIds(itr2->second);
 			spliter->update(pattern, posi);
-			if (!spliter->isBounded(posi) and pattern.size() < maxpat) {
-				edgeGrow();
-			}
+			// pq_bound insert
+			double min_bound = Calculator::bound(db.ys, spliter->gettargets(), posi);
+			spliter->push_pq_bound(min_bound, pattern);
+
 			pattern.pop_back();
-			cache[pattern].childs.push_back(std::make_pair(dcode, posi));
-		}
-	}
-}
-
-void CLASS::oneedgeGrow() {
-	// std::cout << "debug edgeGrow" << std::endl; // debug
-	// report(g2tracers);
-
-	PairSorter b_heap;
-	map<int, PairSorter, std::greater<int>> f_heap;
-	int maxtoc = scanGspan(cache[pattern].g2tracers, b_heap, f_heap);
-	// std::cout << "debug maxtoc " << maxtoc << std::endl; // debug
-
-	// projecting
-	DFSCode dcode;
-	double min_bound;
-	for (auto itr = b_heap.begin(); itr != b_heap.end(); itr++) {
-		// std::cout << "debug edgeGrow b_heap" << std::endl; // debug
-		dcode.labels = Triplet(-1, itr->first.b, -1);
-		dcode.time.set(maxtoc, itr->first.a);
-		pattern.push_back(dcode);
-		if (!check_pattern(pattern, itr->second)) {
-			pattern.pop_back();
-			continue;
-		}
-		vector<std::pair<DFSCode, vector<ID>>> childs;
-		cache.insert({pattern, CacheRecord(itr->second, childs)});
-		vector<ID> posi = getPosiIds(itr->second);
-		min_bound = Calculator::bound(db.ys, spliter->gettargets(), posi);
-		spliter->push_pq_enum(min_bound, PQRecord(pattern, posi));
-		pattern.pop_back();
-		cache[pattern].childs.push_back(std::make_pair(dcode, posi));
-	}
-
-	for (auto itr = f_heap.begin(); itr != f_heap.end(); itr++) {
-		// std::cout << "debug edgeGrow f_heap" << std::endl; // debug
-		for (auto itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
-			dcode.labels = Triplet(-1, itr2->first.a, itr2->first.b);
-			dcode.time.set(itr->first, maxtoc + 1);
-			pattern.push_back(dcode);
-			if (!check_pattern(pattern, itr2->second)) {
-				pattern.pop_back();
-				continue;
-			}
-			vector<std::pair<DFSCode, vector<ID>>> childs;
-			cache.insert({pattern, CacheRecord(itr2->second, childs)});
-			vector<ID> posi = getPosiIds(itr2->second);
-			min_bound = Calculator::bound(db.ys, spliter->gettargets(), posi);
-			spliter->push_pq_enum(min_bound, PQRecord(pattern, posi));
-			pattern.pop_back();
-			cache[pattern].childs.push_back(std::make_pair(dcode, posi));
+			cache[pattern].childs.push_back(dcode);
 		}
 	}
 }
 
 int CLASS::scanGspan(GraphToTracers& g2tracers, PairSorter& b_heap, map<int, PairSorter, std::greater<int>>& f_heap) const {
+	cache[pattern].scan = true;
 	// build right most path
 	vector<size_t> rm_path_index;
 	scan_rm(pattern, rm_path_index);

@@ -86,8 +86,6 @@ int main(int argc, char** argv) {
 		+ " [-s (double) shrinkage]"
 		+ " [-n (double) needed_impurity_decrease]"
 		+ " [-d max_depth]"
-		+ " [-p (double) data_used]"
-		+ " [-f (double) feature_used]"
 		+ " traing_data_file"
 		+ " test_data_file"
 		+ "";
@@ -111,12 +109,6 @@ int main(int argc, char** argv) {
 				break;
 			case 'd':
 				setting.max_depth = atoi(optarg);
-				break;
-			case 'p':
-				setting.data_used = atof(optarg);
-				break;
-			case 'f':
-				setting.feature_used = atof(optarg);
 				break;
 			default:
 				std::cerr << usage << std::endl;
@@ -144,21 +136,18 @@ int main(int argc, char** argv) {
 	cout << "train_file : " << train_filename << " , size " << db.gdata.num_train << endl;
 	cout << "test_file : " << test_filename << " , size " << db.gdata.num_test << endl;
 
-	makeYs();
+	db.ys.resize(db.gdata.num_train);
 
 	if (setting.minsup == 0) {
 		setting.minsup = 1;
-	} else {
-		setting.minsup = int(db.gdata.num_train * setting.minsup * 0.01);
+	} else if (0 < setting.minsup and setting.minsup < 1) {
+		setting.minsup = int(db.gdata.num_train * setting.minsup);
 	}
 	setting.print();
 
-	db.spliter.prepare(allTargets());
-	if (setting.random_forest) {
-		db.tree_ensemble.runRandomForest();
-	} else {
-		db.tree_ensemble.runGradientBoosting();
-	}
+	db.gspan.minsup = setting.minsup;
+	db.gspan.maxpat = setting.maxpat;
+	db.gradient_boosting.run();
 
 	std::cout << "\e[38;5;0m\e[48;5;40m --- end ---  \e[m" << std::endl; // debug
 	return 0;

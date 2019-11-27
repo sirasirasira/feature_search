@@ -7,6 +7,7 @@
 #include "Planter.h"
 #include "Spliter.h"
 #include "Gspan.h"
+#include "Finder.h"
 #include "Evaluater.h"
 
 struct Database {
@@ -19,5 +20,6 @@ struct Database {
 	Planter planter;
 	Spliter spliter;
 	Gspan gspan = Gspan(spliter.getCache(), spliter.gete1Patterns());
+	Finder finder;
 	Evaluater eva;
 };

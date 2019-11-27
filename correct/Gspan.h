@@ -21,7 +21,7 @@ class Gspan {
 			}
 		}
 
-		inline void updataFeatureImportance(const Pattern& pattern, double importance) {
+		inline void updateFeatureImportance(const Pattern& pattern, double importance) {
 			cache.at(pattern).feature_importance += importance;
 		}
 
