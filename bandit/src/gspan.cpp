@@ -16,6 +16,7 @@ void CLASS::makeRoot(const vector<ID>& targets) {
 	cache.insert({root, CacheRecord(childs)});
 	cache[root].scan = true;
 
+	// scan
 	auto& gdata = db.gdata;
 	map<Triplet, GraphToTracers> heap;
 	for (ID gid : targets) {
@@ -138,7 +139,8 @@ bool CLASS::stop_condition(const Pattern pattern, bool valid_flg) {
 }
 
 // only minDFS in DAG
-// !!! minimum pattern not correspond EdgeTracer
+// !!! minimum pattern does not correspond to EdgeTracer
+// scan from all node  != right most path
 bool Gspan::scanGspan(const Pattern& pattern) {
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;

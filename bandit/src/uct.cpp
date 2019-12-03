@@ -19,9 +19,11 @@ void CLASS::run(const vector<ID>& _targets) {
 		if(!selection(root)) { // all node is searched
 			break;
 		}
-		expansion();
-		pattern = path[path.size()-1];
-		pattern = simulation(pattern);
+		if(expansion()) {
+			pattern = simulation(path[path.size()-1]);
+		} else {
+			pattern = path[path.size()-1];
+		}
 		if (cache.find(pattern) == cache.end()) {
 			posi = db.finder.run(pattern, targets);
 		} else {
@@ -42,25 +44,25 @@ bool CLASS::selection(const Pattern& pattern) {
 	for (auto& c : cache[pattern].childs) {
 		if (cache[c].prune) {
 			continue;
-		} else {
-			if (cache[c].count == 0) {
-				if (update(c)) { // prune
-					continue;
-				} else { // not prune
-					best_child = c;
-					break;
-				}
-			} else {
-				ucb = (cache[c].sum_score / cache[c].count)
-					+ setting.exploration_strength
-					* (sqrt(2 * log(cache[pattern].count) / cache[c].count));
-				ucb -= setting.bound_rate * cache[c].bound; //TODO
-			}
+		}
 
-			if (ucb > max_ucb) {
+		if (cache[c].count == 0) {
+			if (update(c)) { // prune
+				continue;
+			} else { // not prune
 				best_child = c;
-				max_ucb = ucb;
+				break;
 			}
+		} else {
+			ucb = (cache[c].sum_score / cache[c].count)
+				+ setting.exploration_strength
+				* (sqrt(2 * log(cache[pattern].count) / cache[c].count));
+			ucb -= setting.bound_rate * cache[c].bound; //TODO
+		}
+
+		if (ucb > max_ucb) {
+			best_child = c;
+			max_ucb = ucb;
 		}
 	}
 
@@ -94,25 +96,33 @@ bool CLASS::update(const Pattern& pattern) {
 	return false;
 }
 
-void CLASS::expansion() {
+bool CLASS::expansion() {
 	const Pattern pattern = path[path.size()-1];
 	// std::cout << "expansion: " << pattern << endl; // debug
-	if (cache[pattern].count >= setting.threshold) {
-		if (!cache[pattern].scan) {
-			if (db.gspan.scanGspan(pattern)) {
-				cache[pattern].terminal = false;
-				expand_selection(pattern);
-			}
+	if (cache[pattern].count < setting.threshold) {
+		return true;
+	}
+
+	if (!cache[pattern].scan) {
+		if (db.gspan.scanGspan(pattern)) {
+			cache[pattern].terminal = false;
+			return expand_selection(pattern);
 		} else {
-			if (cache[pattern].childs.size()) {
-				cache[pattern].terminal = false;
-				expand_selection(pattern);
-			}
+			cache[pattern].prune = true;
+			return false;
+		}
+	} else {
+		if (cache[pattern].childs.size()) {
+			cache[pattern].terminal = false;
+			return expand_selection(pattern);
+		} else {
+			cache[pattern].prune = true;
+			return false;
 		}
 	}
 }
 
-void CLASS::expand_selection(const Pattern& pattern) {
+bool CLASS::expand_selection(const Pattern& pattern) {
 	Pattern selected_child;
 	for (auto& c : cache[pattern].childs) {
 		if (update(c)) { // prune
@@ -125,8 +135,10 @@ void CLASS::expand_selection(const Pattern& pattern) {
 
 	if (selected_child.size() != 0) {
 		path.push_back(selected_child);
+		return true;
 	} else {
 		cache[pattern].prune = true;
+		return false;
 	}
 }
 
