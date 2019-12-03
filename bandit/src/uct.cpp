@@ -16,10 +16,10 @@ void CLASS::run(const vector<ID>& _targets) {
 
 	for (unsigned int i = 0; i < setting.iteration; i++) {
 		path = {root};
-		if(!selection(root)) { // all node is searched
+		if (!selection(root)) { // all node is searched
 			break;
 		}
-		if(expansion()) {
+		if (expansion()) {
 			pattern = simulation(path[path.size()-1]);
 		} else {
 			pattern = path[path.size()-1];
@@ -40,7 +40,7 @@ bool CLASS::selection(const Pattern& pattern) {
 
 	Pattern best_child;
 	double max_ucb = -DBL_MAX;
-	double ucb;
+	double ucb = 0;
 	for (auto& c : cache[pattern].childs) {
 		if (cache[c].prune) {
 			continue;
@@ -54,9 +54,19 @@ bool CLASS::selection(const Pattern& pattern) {
 				break;
 			}
 		} else {
-			ucb = (cache[c].sum_score / cache[c].count)
-				+ setting.exploration_strength
-				* (sqrt(2 * log(cache[pattern].count) / cache[c].count));
+			if (setting.ucd_type == 0) { // UCD (1, 0, 1)
+				ucb = (cache[c].sum_score / cache[c].count)
+					+ setting.exploration_strength
+					* (sqrt(2 * log(cache[pattern].count) / cache[c].count));
+			} else if (setting.ucd_type == 1) { // UCD (1, 1, 1)
+				int sibilings_count = 0;
+				for (auto& s : cache[pattern].childs) {
+					sibilings_count += cache[s].count;
+				}
+				ucb = (cache[c].sum_score / cache[c].count)
+					+ setting.exploration_strength
+					* (sqrt(2 * log(sibilings_count) / cache[c].count));
+			}
 			ucb -= setting.bound_rate * cache[c].bound; //TODO
 		}
 

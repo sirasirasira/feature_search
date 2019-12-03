@@ -84,10 +84,11 @@ int main(int argc, char** argv) {
 		+ " [-c exploration_strength]"
 		+ " [-p stopping_rate]"
 		+ " [-b UCB:bound_rate]"
+		+ " [-u UCD_type]"
 		+ " traing_data_file"
 		+ " test_data_file"
 		+ "";
-	while ((opt = getopt(argc, argv, "m:x:t:s:n:d:i:h:c:p:b:re")) != -1) {
+	while ((opt = getopt(argc, argv, "m:x:t:s:n:d:i:h:c:p:b:u:re")) != -1) {
 		switch (opt) {
 			case 'm':
 				//setting.minsup = atoi(optarg);
@@ -122,6 +123,9 @@ int main(int argc, char** argv) {
 				break;
 			case 'b':
 				setting.bound_rate = atof(optarg);
+				break;
+			case 'u':
+				setting.ucd_type = atoi(optarg);
 				break;
 			default:
 				std::cerr << usage << std::endl;
