@@ -20,7 +20,7 @@ void CLASS::run(const vector<ID>& _targets) {
 			break;
 		}
 		if (expansion()) {
-			pattern = simulation(path[path.size()-1]);
+			pattern = simulation(path[path.size()-1], path.size()-1);
 		} else {
 			pattern = path[path.size()-1];
 		}
@@ -152,7 +152,7 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 	}
 }
 
-Pattern CLASS::simulation(const Pattern& pattern) {
+Pattern CLASS::simulation(const Pattern& pattern, const size_t base_pattern_size) {
 	// cout << "simulation: " << pattern << endl;
 	auto& g2tracers = cache[pattern].g2tracers;
 	// gid is in g2tracers and in targets
@@ -167,7 +167,7 @@ Pattern CLASS::simulation(const Pattern& pattern) {
 	auto& tracers = g2tracers[gid];
 	auto& tracer = tracers[Dice::id(tracers.size())];
 	
-	return db.gspan.EdgeSimulation(pattern, tracer, gid);
+	return db.gspan.EdgeSimulation(pattern, tracer, gid, base_pattern_size);
 }
  
 void CLASS::backpropagation(double score) {

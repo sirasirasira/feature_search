@@ -20,7 +20,7 @@ void CLASS::run(const vector<ID>& _targets) {
 			break;
 		}
 		if (expansion()) {
-			pattern = simulation(path[path.size()-1]);
+			pattern = simulation(path[path.size()-1], path.size()-1);
 		} else {
 			pattern = path[path.size()-1];
 		}
@@ -142,7 +142,7 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 	}
 }
 
-Pattern CLASS::simulation(const Pattern& pattern) {
+Pattern CLASS::simulation(const Pattern& pattern, const size_t base_pattern_size) {
 	// cout << "simulation: " << pattern << endl;
 	if (!cache[pattern].scan) {
 		if (!db.gspan.scanGspan(pattern)) {
@@ -155,20 +155,20 @@ Pattern CLASS::simulation(const Pattern& pattern) {
 	}
 
 	auto random_child = cache[pattern].childs[Dice::id(cache[pattern].childs.size())];
-	if (stop_condition(random_child)) {
+	if (stop_condition(random_child, base_pattern_size)) {
 		return random_child;
 	} else {
-		return simulation(random_child);
+		return simulation(random_child, base_pattern_size);
 	}
 }
 
-bool CLASS::stop_condition(const Pattern pattern) {
+bool CLASS::stop_condition(const Pattern pattern, const size_t base_pattern_size) {
 	// std::cout << "stop_condition: " << pattern << std::endl; // debug
 	if (pattern.size() >= setting.maxpat) {
 		// std::cout << "maxpat" << std::endl;
 		return true;
 	}
-	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) {
+	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
 		// std::cout << "probability" << std::endl;
 		return true;
 	}

@@ -19,6 +19,6 @@ class UCT {
 		bool update(const Pattern&);
 		bool expansion();
 		bool expand_selection(const Pattern&);
-		Pattern simulation(const Pattern&);
+		Pattern simulation(const Pattern&, const size_t);
 		void backpropagation(double);
 };

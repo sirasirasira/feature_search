@@ -52,7 +52,7 @@ class Gspan {
 		size_t minsup;
 		size_t maxpat;
 
-		Pattern EdgeSimulation(const Pattern&, const EdgeTracer&, ID);
+		Pattern EdgeSimulation(const Pattern&, const EdgeTracer&, ID, const size_t);
 		bool scanGspan(const Pattern&);
 		void makeRoot(const vector<ID>&);
 		void one_edge_report(GraphToTracers& g2tracers);
@@ -108,7 +108,7 @@ class Gspan {
 		IsMin is_min;
 		map<Pattern, CacheRecord> cache; // inserted data must keep pointer
 
-		bool stop_condition(const Pattern, bool);
+		bool stop_condition(const Pattern, bool, const size_t);
 		size_t support(GraphToTracers& g2tracers);
 
 };

@@ -45,7 +45,7 @@ void CLASS::makeRoot(const vector<ID>& targets) {
 }
 
 // not minDFS, not support
-Pattern CLASS::EdgeSimulation(const Pattern& _pattern, const EdgeTracer& _tracer, ID gid) {
+Pattern CLASS::EdgeSimulation(const Pattern& _pattern, const EdgeTracer& _tracer, ID gid, const size_t base_pattern_size) {
 	// std::cout << "EdgeSimulation: " << _pattern << std::endl; // debug
 
 	Pattern pattern = _pattern;
@@ -117,11 +117,11 @@ Pattern CLASS::EdgeSimulation(const Pattern& _pattern, const EdgeTracer& _tracer
 				break;
 			}
 		}
-	} while (!stop_condition(pattern, valid_flg));
+	} while (!stop_condition(pattern, valid_flg, base_pattern_size));
 	return pattern;
 }
 
-bool CLASS::stop_condition(const Pattern pattern, bool valid_flg) {
+bool CLASS::stop_condition(const Pattern pattern, bool valid_flg, const size_t base_pattern_size) {
 	// std::cout << "stop_condition: " << pattern << std::endl; // debug
 	if (pattern.size() >= maxpat) {
 		// std::cout << "maxpat" << std::endl;
@@ -131,7 +131,7 @@ bool CLASS::stop_condition(const Pattern pattern, bool valid_flg) {
 		// std::cout << "no childs" << std::endl;
 		return true;
 	}
-	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) {
+	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
 		// std::cout << "probability" << std::endl;
 		return true;
 	}
