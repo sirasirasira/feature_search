@@ -63,6 +63,8 @@ void CLASS::report() {
 	cout << "REPORT " << tree_count << " cache_size " << db.gspan.getCache().size() << endl;
 	cout << "REPORT " << tree_count << " gain_count " << gain_count << endl;
 	cout << "REPORT " << tree_count << " bound_count " << bound_count << endl;
+	cout << "REPORT " << tree_count << " min_convert_time " << double(min_convert_time) / CLOCKS_PER_SEC << endl;
+	cout << "REPORT " << tree_count << " simulation_time " << double(simulation_time) / CLOCKS_PER_SEC << endl;
 }
 
 void CLASS::reportFeatureImportance() {

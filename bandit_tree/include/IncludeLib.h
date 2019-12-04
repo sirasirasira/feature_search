@@ -13,6 +13,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cassert>
+#include <time.h>
 
 using std::cout;
 using std::endl;

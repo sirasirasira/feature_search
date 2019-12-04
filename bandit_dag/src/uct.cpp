@@ -20,7 +20,10 @@ void CLASS::run(const vector<ID>& _targets) {
 			break;
 		}
 		if (expansion()) {
+			clock_t start = clock();
 			pattern = simulation(path[path.size()-1], path.size()-1);
+			clock_t end = clock();
+			db.gradient_boosting.addSimulationTime(end-start);
 		} else {
 			pattern = path[path.size()-1];
 		}

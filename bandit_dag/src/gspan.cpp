@@ -193,7 +193,10 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 							if (!tested[added_edge.id]) {
 								ids_dic.insert(ids);
 								cursor.push_back(VertexPair(i,added_edge.to,added_edge.id, added_edge.labels.y));
+								clock_t start = clock();
 								auto pat_cur = is_min.convert(cursor, gid);
+								clock_t end = clock();
+								db.gradient_boosting.addMinTime(end-start);
 								heap[pat_cur.first][gid].push_back(pat_cur.second);
 								cursor.pop_back();
 							}
@@ -201,7 +204,10 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 							// forward
 							ids_dic.insert(ids);
 							cursor.push_back(VertexPair(i,added_edge.to,added_edge.id, added_edge.labels.y));
+							clock_t start = clock();
 							auto pat_cur = is_min.convert(cursor, gid);
+							clock_t end = clock();
+							db.gradient_boosting.addMinTime(end-start);
 							heap[pat_cur.first][gid].push_back(pat_cur.second);
 							cursor.pop_back();
 						}

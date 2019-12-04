@@ -64,7 +64,16 @@ bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
 		if (support(g2tracers) < minsup) {
 			return false;
 		}
+		/*
 		if (is_min.run(pattern) == false) {
+			return false;
+		}
+		*/
+		clock_t start = clock();
+		bool min_flg = is_min.run(pattern);
+		clock_t end = clock();
+		db.gradient_boosting.addIsMinTime(end-start);
+		if (min_flg == false) {
 			return false;
 		}
 		return true;
