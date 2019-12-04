@@ -8,6 +8,9 @@ class GradientBoosting {
 		void incGainCount() {
 			gain_count++;
 		}
+		int getGainCount() {
+			return gain_count;
+		}
 		void incBoundCount() {
 			bound_count++;
 		}
@@ -16,6 +19,9 @@ class GradientBoosting {
 		}
 		void addSimulationTime(clock_t time) {
 			simulation_time += time;
+		}
+		void addScanTime(clock_t time) {
+			scan_time += time;
 		}
 
 	private:
@@ -26,6 +32,7 @@ class GradientBoosting {
 		int bound_count = 0;
 		clock_t is_min_time = 0;
 		clock_t simulation_time = 0;
+		clock_t scan_time = 0;
 
 		void makeTargets();
 		void plantFirst();

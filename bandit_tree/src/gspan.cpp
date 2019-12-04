@@ -80,6 +80,7 @@ bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
 }
 
 bool Gspan::scanGspan(const Pattern& pattern) {
+	clock_t start = clock();
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;
 	// build right most path
@@ -190,6 +191,8 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 			cache[pattern].childs.push_back(child);
 		}
 	}
+	clock_t end = clock();
+	db.gradient_boosting.addScanTime(end-start);
 	return scan_flg;
 }
 

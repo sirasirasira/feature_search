@@ -8,6 +8,9 @@ class GradientBoosting {
 		void incGainCount() {
 			gain_count++;
 		}
+		int getGainCount() {
+			return gain_count;
+		}
 		void incBoundCount() {
 			bound_count++;
 		}

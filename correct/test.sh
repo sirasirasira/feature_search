@@ -1,6 +1,6 @@
 if [ $# -ne 1 ]
 then
-	echo "please input dataset name"
+	echo "please input maxsize"
 	exit
 fi
 

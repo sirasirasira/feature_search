@@ -65,6 +65,7 @@ void CLASS::report() {
 	cout << "REPORT " << tree_count << " bound_count " << bound_count << endl;
 	cout << "REPORT " << tree_count << " is_min_time " << double(is_min_time) / CLOCKS_PER_SEC << endl;
 	cout << "REPORT " << tree_count << " simulation_time " << double(simulation_time) / CLOCKS_PER_SEC << endl;
+	cout << "REPORT " << tree_count << " scan_time " << double(scan_time) / CLOCKS_PER_SEC << endl;
 }
 
 void CLASS::reportFeatureImportance() {

@@ -131,7 +131,8 @@ bool CLASS::stop_condition(const Pattern pattern, bool valid_flg, const size_t b
 		// std::cout << "no childs" << std::endl;
 		return true;
 	}
-	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
+	//if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
+	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) { // original FUSE
 		// std::cout << "probability" << std::endl;
 		return true;
 	}
@@ -142,6 +143,7 @@ bool CLASS::stop_condition(const Pattern pattern, bool valid_flg, const size_t b
 // !!! minimum pattern does not correspond to EdgeTracer
 // scan from all node  != right most path
 bool Gspan::scanGspan(const Pattern& pattern) {
+	clock_t start = clock();
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;
 	if (pattern.size() >= maxpat) {
@@ -239,6 +241,8 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 		cache.insert({itr->first, CacheRecord(itr->second, childs)});
 		child_flg = true;
 	}
+	clock_t end = clock();
+	db.gradient_boosting.addScanTime(end-start);
 	return child_flg;
 }
 

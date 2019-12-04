@@ -46,6 +46,9 @@ class Spliter {
 		inline map<Pattern, CacheRecord>& getCache() {
 			return cache;
 		}
+		void TimeStart() {
+			search_start = clock();
+		}
 
 
 	private:
@@ -57,6 +60,7 @@ class Spliter {
 		map<Pattern, CacheRecord> cache;
 		vector<Pattern> e1patterns;
 		priority_queue<std::pair<double, Pattern>, vector<std::pair<double, Pattern>>, std::greater<std::pair<double, Pattern>>> pq_bound;
+		clock_t search_start;
 
 		void initMinScore();
 		void search();

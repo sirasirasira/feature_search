@@ -20,6 +20,9 @@ class Spliter {
 			assert(valid_flg);
 			return parent_score - min_score;
 		}
+		void TimeStart() {
+			search_start = clock();
+		}
 
 	private:
 		bool valid_flg;
@@ -27,6 +30,7 @@ class Spliter {
 		double parent_score;
 		double min_score;
 		Pattern best_pattern;
+		clock_t search_start;
 
 		void initMinScore();
 };

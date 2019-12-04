@@ -171,7 +171,8 @@ bool CLASS::stop_condition(const Pattern pattern, const size_t base_pattern_size
 		// std::cout << "maxpat" << std::endl;
 		return true;
 	}
-	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
+	//if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
+	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) { // original FUSE
 		// std::cout << "probability" << std::endl;
 		return true;
 	}

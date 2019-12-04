@@ -46,6 +46,9 @@ class Spliter {
 		inline map<Pattern, CacheRecord>& getCache() {
 			return cache;
 		}
+		void TimeStart() {
+			search_start = clock();
+		}
 
 
 	private:
@@ -56,6 +59,7 @@ class Spliter {
 		Pattern best_pattern;
 		map<Pattern, CacheRecord> cache;
 		vector<Pattern> e1patterns;
+		clock_t search_start;
 
 		void initMinScore();
 		void search();
