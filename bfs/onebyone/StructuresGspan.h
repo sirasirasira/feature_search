@@ -116,5 +116,9 @@ inline std::ostream& operator << (std::ostream& os, const Pattern pattern) {
 			os << " " << pattern[i].labels.y << " (b" << pattern[i].time.b << ")";
 		}
 	}
+	os << "\n";
+	for (size_t i = 0; i < pattern.size(); i++) {
+		os << " " << "(" << pattern[i].time.a << "," << pattern[i].time.b << "," << pattern[i].labels.x << "," << pattern[i].labels.y << "," << pattern[i].labels.z << ")";
+	}
 	return os;
 }

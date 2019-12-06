@@ -45,7 +45,7 @@ inline bool operator != (const DFSCode& l, const DFSCode& r) {
 inline bool operator < (const DFSCode& l, const DFSCode& r) { // original gspan order
 	if(l.time.a != r.time.a) return l.time.a > r.time.a;
 	if(l.time.b != r.time.b) return l.time.b < r.time.b;
-	if(l.labels.x != r.labels.x) return l.labels < r.labels;
+	if(l.labels.x != r.labels.x) return l.labels.x < r.labels.x;
 	if(l.labels.y != r.labels.y) return l.labels.y < r.labels.y;
 	return (l.labels.z < r.labels.z);
 }
