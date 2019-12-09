@@ -58,9 +58,6 @@ size_t CLASS::support(GraphToTracers& g2tracers) {
 }
 
 bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
-		if (pattern.size() > maxpat) {
-			return false;
-		}
 		if (support(g2tracers) < minsup) {
 			return false;
 		}
@@ -83,6 +80,9 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 	clock_t start = clock();
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;
+	if (pattern.size() >= maxpat) {
+		return false;
+	}
 	// build right most path
 	vector<size_t> rm_path_index;
 	scan_rm(pattern, rm_path_index);

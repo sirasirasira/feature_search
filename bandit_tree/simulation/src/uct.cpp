@@ -11,6 +11,7 @@ void CLASS::run(const vector<ID>& _targets) {
 	targets = _targets;
 	db.gspan.clearUCB();
 	Pattern pattern;
+	GraphToTracers g2tracers;
 	vector<ID> posi;
 	double score;
 
@@ -21,13 +22,16 @@ void CLASS::run(const vector<ID>& _targets) {
 		}
 		if (expansion() and (path.size()-1) < db.setting.maxpat) {
 			clock_t start = clock();
-			pattern = simulation(path[path.size()-1], path.size()-1);
+			auto res = simulation(path[path.size()-1], path.size()-1);
 			clock_t end = clock();
 			db.gradient_boosting.addSimulationTime(end-start);
+			pattern = res.first;
+			g2tracers = res.second;
 		} else {
 			pattern = path[path.size()-1];
+			g2tracers = cache[pattern].g2tracers;
 		}
-		posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
+		posi = db.gspan.getPosiIds(g2tracers);
 		score = Calculator::score(db.ys, targets, posi);
 		backpropagation(score);
 	}
@@ -143,38 +147,9 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 
 Pattern CLASS::simulation(const Pattern& pattern, const size_t base_pattern_size) {
 	// cout << "simulation: " << pattern << endl;
-	if (!cache[pattern].scan) {
-		if (!db.gspan.scanGspan(pattern)) {
-			return pattern;
-		}
-	}
-
-	if (cache[pattern].childs.size() == 0) {
-		return pattern;
-	}
-
-	auto random_child = cache[pattern].childs[Dice::id(cache[pattern].childs.size())];
-	if (stop_condition(random_child, base_pattern_size)) {
-		return random_child;
-	} else {
-		return simulation(random_child, base_pattern_size);
-	}
+	return db.gspan.EdgeSimulation(pattern, base_pattern_size);
 }
 
-bool CLASS::stop_condition(const Pattern pattern, const size_t base_pattern_size) {
-	// std::cout << "stop_condition: " << pattern << std::endl; // debug
-	if (pattern.size() >= setting.maxpat) {
-		// std::cout << "maxpat" << std::endl;
-		return true;
-	}
-	//if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
-	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) { // original FUSE
-		// std::cout << "probability" << std::endl;
-		return true;
-	}
-	return false;
-}
- 
 void CLASS::backpropagation(double score) {
 	// cout << "backpropagation: " << score << endl;
 	for (int i = path.size() - 1; i > 0; i--) {

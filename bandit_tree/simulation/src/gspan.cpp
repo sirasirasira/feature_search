@@ -196,6 +196,134 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 	return scan_flg;
 }
 
+pair<Pattern, GraphToTracers> CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_size) {
+	// std::cout << "EdgeSimulation: " << _pattern << std::endl; // debug
+
+	Pattern pattern = _pattern;
+	GraphToTracers& g2tracers = cache[pattern].g2tracers;
+
+	do {
+		valid_flg = false;
+		if (cache[pattern].scan) {
+			if (cache[pattern].childs.size()) {
+				pattern = cache[pattern].childs[Dice::id(cache[pattern].childs.size())];
+				g2tracers = cache[pattern].g2tracers;
+				valid_flg = true;
+			}
+		} else {
+			ID gbaseid = Dice::id(g2tracers.size());
+			auto itr_g_begin = g2tracers.begin();
+			for (size_t i = 0; i < g2tracers.size(); i++) {
+				if (i + gbaseid < g2tracers.size()) {
+					ID gid = (itr_g_begin + (i + gbaseid))->first;
+					Tracers tracers = (itr_g_begin + (i + gbaseid))->second;
+				} else {
+					ID gid = (itr_g_begin + (i + gbaseid - g2tracers.size()))->first;
+					Tracers tracers = (itr_g_begin + (i + gbaseid - g2tracers.size()))->second;
+				}
+				Graph& g = gdata[gid];
+				// random edge expansion
+				vector<size_t> rm_path_index;
+				scan_rm(pattern, rm_path_index);
+
+				int maxtoc = pattern[rm_path_index[0]].time.b;
+
+				vector<VertexPair> vpairs(pattern.size());
+				int minlabel = pattern[0].labels.x;
+				EdgeTracer* tracer;
+				DFSCode dcode;
+
+				ID tbaseid = Dice::id(tracers.size());
+				auto itr_t_begin = tracers.begin();
+				for (size_t j = 0; j < tracers.size(); j++) {
+					// an instance (a sequence of vertex pairs) as vector "vpair"
+					if (j + tbaseid < tracers.size()) {
+						tracer = &(*(itr_t_begin + (j + tbaseid)));
+					} else {
+						tracer = &(*(itr_t_begin + (j + tbaseid - tracers.size())));
+					}
+
+					//vector<bool> discovered(g.size());
+					//vector<bool> tested(g.num_of_edges);
+					vector<char> discovered(g.size(), false); // as bool vector
+					vector<char> tested(g.num_of_edges, false); // as bool vector
+
+					for (int i = vpairs.size() - 1; i >= 0; i--, tracer = tracer->predec) {
+						vpairs[i] = tracer->vpair;
+						tested[vpairs[i].id] = true;
+						discovered[vpairs[i].a] = discovered[vpairs[i].b] = true;
+					}
+
+					vector<ID> shuffle_rm  = Dice::shuffle(rm_path_index.size());
+					for (auto idx : shuffle_rm) {
+						if (idx == 0) { // right most vertex
+							//TODO
+							Pair& rm_vpair = vpairs[rm_path_index[idx]];
+
+							for (size_t i = 0; i < g[rm_vpair.b].size(); i++) {
+								Edge& added_edge = g[rm_vpair.b][i];
+								// backward from the right most vertex
+								for (size_t j = 1; j < rm_path_index.size(); j++) {
+									int idx = rm_path_index[j];
+									if (tested[added_edge.id]) continue;
+									if (vpairs[idx].a != added_edge.to) continue;
+									if (pattern[idx].labels <= added_edge.labels.reverse()) {
+										pkey.set(pattern[idx].time.a, added_edge.labels.y);
+										cursor.set(rm_vpair.b, added_edge.to, added_edge.id, &(*itr));
+										b_heap[pkey][gid].push_back(cursor);
+									}
+								}
+								// forward from the right most vertex
+								if (minlabel > added_edge.labels.z or discovered[added_edge.to]) continue;
+								pkey.set(added_edge.labels.y, added_edge.labels.z);
+								cursor.set(rm_vpair.b, added_edge.to, added_edge.id, &(*itr));
+								f_heap[maxtoc][pkey][gid].push_back(cursor);
+							}
+						} else {
+							//TODO
+							// forward from the other nodes on the right most path
+							for (size_t j = 0; j < rm_path_index.size(); j++) {
+								size_t i = rm_path_index[j];
+								Pair& from_vpair = vpairs[i];
+								for (size_t k = 0; k < g[from_vpair.a].size(); k++) {
+									Edge& added_edge = g[from_vpair.a][k];
+									if (minlabel > added_edge.labels.z or discovered[added_edge.to]) continue;
+
+									if (pattern[i].labels <= added_edge.labels) {
+										pkey.set(added_edge.labels.y, added_edge.labels.z);
+										cursor.set(from_vpair.a, added_edge.to, added_edge.id, &(*itr));
+										f_heap[pattern[i].time.a][pkey][gid].push_back(cursor);
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+	} while (!stop_condition(pattern, valid_flg, base_pattern_size));
+
+	return std::make_pair<pattern, g2tracers>;
+}
+
+bool CLASS::stop_condition(const Pattern pattern, bool valid_flg, const size_t base_pattern_size) {
+	// std::cout << "stop_condition: " << pattern << std::endl; // debug
+	if (pattern.size() >= maxpat) {
+		// std::cout << "maxpat" << std::endl;
+		return true;
+	}
+	if (!valid_flg) {
+		// std::cout << "no childs" << std::endl;
+		return true;
+	}
+	//if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
+	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) { // original FUSE
+		// std::cout << "probability" << std::endl;
+		return true;
+	}
+	return false;
+}
+
 /*
    void CLASS::one_edge_report(GraphToTracers& g2tracers){
    std::cout << g2tracers.size() << " || " << endl;
