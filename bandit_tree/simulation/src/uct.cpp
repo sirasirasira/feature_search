@@ -20,13 +20,13 @@ void CLASS::run(const vector<ID>& _targets) {
 		if (!selection(root)) { // all node is searched
 			break;
 		}
-		if (expansion() and (path.size()-1) < db.setting.maxpat) {
+		if (expansion() and (path.size()-1) < setting.maxpat) {
 			clock_t start = clock();
 			auto res = simulation(path[path.size()-1], path.size()-1);
 			clock_t end = clock();
 			db.gradient_boosting.addSimulationTime(end-start);
-			pattern = res.first;
-			g2tracers = res.second;
+			pattern = res.pattern;
+			g2tracers = res.g2tracers;
 		} else {
 			pattern = path[path.size()-1];
 			g2tracers = cache[pattern].g2tracers;
@@ -145,7 +145,7 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 	}
 }
 
-Pattern CLASS::simulation(const Pattern& pattern, const size_t base_pattern_size) {
+PandT CLASS::simulation(const Pattern& pattern, const size_t base_pattern_size) {
 	// cout << "simulation: " << pattern << endl;
 	return db.gspan.EdgeSimulation(pattern, base_pattern_size);
 }

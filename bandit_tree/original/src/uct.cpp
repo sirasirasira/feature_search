@@ -19,7 +19,7 @@ void CLASS::run(const vector<ID>& _targets) {
 		if (!selection(root)) { // all node is searched
 			break;
 		}
-		if (expansion() and (path.size()-1) < db.setting.maxpat) {
+		if (expansion() and (path.size()-1) < setting.maxpat) {
 			clock_t start = clock();
 			pattern = simulation(path[path.size()-1], path.size()-1);
 			clock_t end = clock();

@@ -54,7 +54,7 @@ class Gspan {
 
 		bool scanGspan(const Pattern&);
 		void makeRoot(const vector<ID>&);
-		pair<Pattern, GraphToTracers> EdgeSimulation(const Pattern&, const size_t);
+		PandT EdgeSimulation(const Pattern& pattern, const size_t base_pattern_size);
 		void one_edge_report(GraphToTracers& g2tracers);
 
 		inline map<Pattern, CacheRecord>& getCache() {
@@ -110,5 +110,6 @@ class Gspan {
 
 		size_t support(GraphToTracers& g2tracers);
 		bool check_pattern(Pattern pattern, GraphToTracers& g2tracers);
+		bool stop_condition(const Pattern, size_t, const size_t);
 
 };
