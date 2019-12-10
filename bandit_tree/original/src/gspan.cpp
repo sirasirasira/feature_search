@@ -78,7 +78,7 @@ bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
 
 bool Gspan::scanGspan(const Pattern& pattern) {
 	clock_t start = clock();
-	 std::cout << "scanGspan: " << pattern << std::endl; // debug
+	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;
 	if (pattern.size() >= maxpat) {
 		return false;
@@ -103,7 +103,6 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 	// std::cout << pattern << std::endl; // debug
 	for (auto x = g2tracers.begin(); x != g2tracers.end(); x++) {
 		ID gid = x->first;
-		cout << gid << ":" << endl;
 		Graph& g = db.gdata[gid];
 		for (auto itr = x->second.begin(); itr != x->second.end(); itr++ ) {
 			// an instance (a sequence of vertex pairs) as vector "vpair"
@@ -116,11 +115,9 @@ bool Gspan::scanGspan(const Pattern& pattern) {
 
 			for (int i = vpairs.size() - 1; i >= 0; i--, tracer = tracer->predec) {
 				vpairs[i] = tracer->vpair;
-				cout << "(" << vpairs[i].a << " " << vpairs[i].b << " " << vpairs[i].id << ") ";
 				tested[vpairs[i].id] = true;
 				discovered[vpairs[i].a] = discovered[vpairs[i].b] = true;
 			}
-			cout << endl;
 
 			Pair& rm_vpair = vpairs[rm_path_index[0]];
 

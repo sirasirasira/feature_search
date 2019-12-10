@@ -196,7 +196,7 @@ bool CLASS::scanGspan(const Pattern& pattern) {
 }
 
 PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_size) {
-	 std::cout << "EdgeSimulation: " << _pattern << std::endl; // debug
+	// std::cout << "EdgeSimulation: " << _pattern << std::endl; // debug
 
 	Pattern pattern = _pattern;
 	map<Pattern, GraphToTracers> cache_tmp;
@@ -205,7 +205,6 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 	size_t valid_flg; // 0:stop, 1:backward, 2:forward
 
 	do {
-		std::cout << "while in: " << pattern << std::endl; // debug
 		valid_flg = 0;
 
 		Pattern origin_pattern = pattern;
@@ -215,24 +214,6 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 		vector<VertexPair> vpairs(pattern.size());
 		int minlabel = pattern[0].labels.x;
 
-		/*
-		EdgeTracer* tracer;
-		cout << "g2tracers start" << endl;
-		for (auto x = cache_tmp[pattern].begin(); x != cache_tmp[pattern].end(); x++) {
-			ID gid = x->first;
-			cout << gid << ":" << endl;
-			for (auto itr = x->second.begin(); itr != x->second.end(); itr++ ) {
-				tracer = &(*itr);
-				for (int i = pattern.size() - 1; i >= 0; i--, tracer = tracer->predec) {
-					vpairs[i] = tracer->vpair;
-					cout << "(" << vpairs[i].a << " " << vpairs[i].b << " " << vpairs[i].id << ") ";
-				}
-				cout << endl;
-			}
-		}
-		cout << "g2tracers end" << endl;
-		*/
-
 		if (cache[pattern].scan) {
 			if (cache[pattern].childs.size()) {
 				pattern = cache[pattern].childs[Dice::id(cache[pattern].childs.size())];
@@ -240,16 +221,14 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				valid_flg = 1;
 			}
 		} else {
-			std::cout << "scan 0 out" << std::endl; // debug
 			vector<ID> gids(cache_tmp[pattern].size());
 			int i = 0;
-			for (auto x = cache_tmp[pattern].begin(); x != cache_tmp[pattern].end(); x++) {
+			for (auto x = cache_tmp[pattern].begin(); x != cache_tmp[pattern].end(); ++x) {
 				gids[i] = x->first;
 				i++;
 			}
 			gids = Dice::shuffle_ids(gids);
 			for (auto gid : gids) {
-				std::cout << gid << ":" << std::endl; // debug
 				Graph& g = db.gdata[gid];
 				Tracers tracers = cache_tmp[pattern][gid];
 
@@ -257,7 +236,7 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				EdgeTracer* tracer;
 				DFSCode dcode;
 				tracers = Dice::shuffle_tracers(tracers);
-				for (auto itr_t = tracers.begin(); itr_t != tracers.end(); itr_t++ ) {
+				for (auto itr_t = tracers.begin(); itr_t != tracers.end(); ++itr_t ) {
 					// an instance (a sequence of vertex pairs) as vector "vpair"
 					tracer = &(*itr_t);
 
@@ -268,11 +247,9 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 
 					for (int k = vpairs.size() - 1; k >= 0; k--, tracer = tracer->predec) {
 						vpairs[k] = tracer->vpair;
-						cout << "(" << vpairs[k].a << " " << vpairs[k].b << " " << vpairs[k].id << ") ";
 						tested[vpairs[k].id] = true;
 						discovered[vpairs[k].a] = discovered[vpairs[k].b] = true;
 					}
-					cout << endl;
 
 					vector<ID> shuffle_rm  = Dice::shuffle(rm_path_index.size());
 					for (auto idx : shuffle_rm) {
@@ -292,7 +269,6 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 										dcode.time.set(maxtoc, pattern[rm_idx].time.a);
 										pattern.push_back(dcode);
 										if (is_min.run(pattern)) {
-											cout << "find!" << endl;
 											valid_flg = 1;
 											goto check;
 										}
@@ -305,8 +281,6 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 								dcode.time.set(maxtoc, maxtoc+1);
 								pattern.push_back(dcode);
 								if (is_min.run(pattern)) {
-									cout << "find!" << endl;
-									cout << "(" << rm_vpair.b << " " << added_edge.to << " " << added_edge.id << ") " << endl;;
 									valid_flg = 2;
 									goto check;
 								}
@@ -323,8 +297,6 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 								dcode.time.set(pattern[rm_path_index[idx]].time.a, maxtoc+1);
 								pattern.push_back(dcode);
 								if (is_min.run(pattern)) {
-									cout << "find!" << endl;
-									cout << "(" << from_vpair.b << " " << added_edge.to << " " << added_edge.id << ") " << endl;;
 									valid_flg = 2;
 									goto check;
 								}
@@ -335,58 +307,36 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				}
 			}
 check:
-			std::cout << "check_point: " << pattern << std::endl; // debug
-			std::cout << "check_point: " << origin_pattern << std::endl; // debug
+		// cout << "check point: " << pattern << endl;
 			if (valid_flg) {
-				std::cout << "find in" << std::endl; // debug
-				/*
-		EdgeTracer* tracer;
-		cout << "g2tracers start" << endl;
-		for (auto x = cache_tmp[origin_pattern].begin(); x != cache_tmp[origin_pattern].end(); x++) {
-			ID gid = x->first;
-			cout << gid << ":" << endl;
-			for (auto itr = x->second.begin(); itr != x->second.end(); itr++ ) {
-				tracer = &(*itr);
-				for (int i = origin_pattern.size() - 1; i >= 0; i--, tracer = tracer->predec) {
-					vpairs[i] = tracer->vpair;
-					cout << "(" << vpairs[i].a << " " << vpairs[i].b << " " << vpairs[i].id << ") ";
-				}
-				cout << endl;
-			}
-		}
-		cout << "g2tracers end" << endl;
-				*/
 				// make g2tracers_new
+				GraphToTracers g2tracers_new;
 				EdgeTracer* tracer;
 				EdgeTracer cursor;
 				auto& new_edge = pattern[pattern.size()-1];
-				for (auto x = cache_tmp[origin_pattern].begin(); x != cache_tmp[origin_pattern].end(); x++) {
+				for (auto x = cache_tmp[origin_pattern].begin(); x != cache_tmp[origin_pattern].end(); ++x) {
 					ID gid = x->first;
-					cout << gid << ":" << endl;
 					Graph& g = db.gdata[gid];
 					for (auto itr = x->second.begin(); itr != x->second.end(); itr++ ) {
 						// an instance (a sequence of vertex pairs) as vector "vpair"
 						tracer = &(*itr);
 
 						vector<char> discovered(g.size(), false); // as bool vector
-						vector<ID> time2vid(maxtoc, -1); // as bool vector
+						vector<int> time2vid(maxtoc+1, -1);
 
-						for (int i = vpairs.size() - 1; i >= 0; i--, tracer = tracer->predec) {
+						for (int i = origin_pattern.size() - 1; i >= 0; i--, tracer = tracer->predec) {
 							vpairs[i] = tracer->vpair;
-							cout << "(" << vpairs[i].a << " " << vpairs[i].b << " " << vpairs[i].id << ") ";
 							discovered[vpairs[i].a] = discovered[vpairs[i].b] = true;
-							time2vid[pattern[i].time.a] = vpairs[i].a;
-							time2vid[pattern[i].time.b] = vpairs[i].b;
+							time2vid[origin_pattern[i].time.a] = vpairs[i].a;
+							time2vid[origin_pattern[i].time.b] = vpairs[i].b;
 						}
-						cout << endl;
 
 						if (valid_flg == 1) { // backward
 							for (size_t i = 0; i < g[time2vid[new_edge.time.a]].size(); i++) {
 								Edge& added_edge = g[time2vid[new_edge.time.a]][i];
-								if (added_edge.to != time2vid[new_edge.time.b]) continue;
-								cout << "push cache_tmp" << endl;
+								if (added_edge.to != (ID)time2vid[new_edge.time.b]) continue;
 								cursor.set(time2vid[new_edge.time.a], added_edge.to, added_edge.id, &(*itr));
-								cache_tmp[pattern][gid].push_back(cursor);
+								g2tracers_new[gid].push_back(cursor);
 							}
 						} else { // forward
 							for (size_t i = 0; i < g[time2vid[new_edge.time.a]].size(); i++) {
@@ -394,14 +344,13 @@ check:
 								if (discovered[added_edge.to]) continue;
 								if (added_edge.labels.y != new_edge.labels.y) continue;
 							    if (added_edge.labels.z != new_edge.labels.z) continue;
-								cout << "push cache_tmp" << endl;
 								cursor.set(time2vid[new_edge.time.a], added_edge.to, added_edge.id, &(*itr));
-								cache_tmp[pattern][gid].push_back(cursor);
+								g2tracers_new[gid].push_back(cursor);
 							}
 						}
 					}
 				}
-				std::cout << "find out" << std::endl; // debug
+				cache_tmp[pattern] = g2tracers_new;
 			}
 		}
 	} while (!stop_condition(pattern, valid_flg, base_pattern_size));
@@ -423,12 +372,10 @@ bool CLASS::stop_condition(const Pattern pattern, size_t valid_flg, const size_t
 		return true;
 	}
 	//if (Dice::p(1 - pow(setting.stopping_rate, pattern.size() - base_pattern_size))) {
-	/*
 	if (Dice::p(1 - pow(setting.stopping_rate, pattern.size()))) { // original FUSE
 		// std::cout << "probability" << std::endl;
 		return true;
 	}
-	*/
 	return false;
 }
 
