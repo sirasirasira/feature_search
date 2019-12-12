@@ -25,11 +25,10 @@ void CLASS::prepare(const vector<ID>& _targets) {
 	std::cout << "prepare cache size: " << cache.size() << std::endl;
 }
 
-vector<ID> CLASS::run(const vector<ID>& _targets) {
+vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_t depth) {
 	// std::cout << "debug spliter run" << std::endl; // debug
-	TimeStart();
-	std::ofstream file;
-	file.open("search.dat", std::ios::out);
+	TimeStart(tree_count, depth);
+
 	targets = _targets;
 	best_pattern = {};
 	initMinScore();
@@ -62,14 +61,6 @@ void CLASS::search() {
 
 	// pq_bound search
 	while (!pq_bound.empty()) {
-		/*
-		auto tmp = pq_bound;
-		while (!tmp.empty()) {
-			std::cout << tmp.top().first << ": " << tmp.top().second << endl;
-			tmp.pop();
-		}
-		std::cout << endl;
-		*/
 		double min_bound = pq_bound.top().first;
 		if (min_score <= min_bound) {
 			break;
@@ -97,11 +88,8 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 	if (score < min_score ) { // old pattern may be used (this func is called from gspan)
 		min_score = score;
 		best_pattern = pattern;
-		clock_t time = clock() - search_start;
 		int gain_count = db.gradient_boosting.getGainCount();
-		std::ofstream file;
-		file.open("search.dat", std::ios::app);
-		file << double(time) / CLOCKS_PER_SEC << "\t" << gain_count << "\t" << min_score / targets.size() << std::endl;
+		Log(gain_count, min_score, best_pattern);
 	}
 }
 

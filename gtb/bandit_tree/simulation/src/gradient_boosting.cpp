@@ -14,7 +14,7 @@ void CLASS::run() {
 	plantFirst();
 	for (tree_count = 1; tree_count <= setting.num_of_trees; tree_count++) {
 		calcResidualErrors();
-		const vector<double>& additive_ys = db.planter.run(train_targets, test_targets);
+		const vector<double>& additive_ys = db.planter.run(train_targets, test_targets, tree_count);
 		for (ID id = 0; id < db.gdata.size(); id++) {
 			db.y_predictions[id] += setting.shrinkage * additive_ys[id];
 		}
