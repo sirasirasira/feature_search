@@ -210,7 +210,7 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				valid_flg = 1;
 			}
 		} else {
-			vector<ID> gids(cache_tmp[pattern].size());
+			vector<ID> gids(cache_tmp[pattern].size()); //here
 			int i = 0;
 			for (auto x = cache_tmp[pattern].begin(); x != cache_tmp[pattern].end(); ++x) {
 				gids[i] = x->first;
