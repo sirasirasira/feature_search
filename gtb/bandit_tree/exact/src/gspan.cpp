@@ -17,10 +17,11 @@ void CLASS::makeRoot(const vector<ID>& targets) {
 	cache[root].scan = true;
 
 	// scan
+	auto& gdata = db.gdata;
 	map<Triplet, GraphToTracers> heap;
 	for (ID gid : targets) {
 		EdgeTracer cursor;
-		Graph& g = db.gdata[gid];
+		Graph& g = gdata[gid];
 		for (ID vid = 0; vid < (ID) g.size(); vid++) {
 			for (auto e : g[vid]) {
 				if (e.labels.x <= e.labels.z) {
@@ -188,7 +189,7 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 
 	Pattern pattern = _pattern;
 	map<Pattern, GraphToTracers> cache_tmp;
-	cache_tmp[pattern] = cache[pattern].g2tracers;
+	// cache_tmp[pattern] = cache_origin[pattern].g2tracers; //TODO not understand
 
 	size_t valid_flg; // 0:stop, 1:backward, 2:forward
 
@@ -216,8 +217,9 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				i++;
 			}
 			gids = Dice::shuffle_ids(gids);
+			auto& gdata = db.gdata;
 			for (auto gid : gids) {
-				Graph& g = db.gdata[gid];
+				Graph& g = gdata[gid];
 				Tracers tracers = cache_tmp[pattern][gid];
 
 				// random edge expansion

@@ -34,12 +34,12 @@ struct Dice {
 		return v;
 	}
 
-	static vector<ID> shuffle_ids(vector<ID> v) {
+	static vector<ID> shuffle_ids(vector<ID>& v) {
 		std::shuffle(v.begin(), v.end(), mt);
 		return v;
 	}
 
-	static Tracers shuffle_tracers(Tracers tracers) {
+	static Tracers shuffle_tracers(Tracers& tracers) {
 		std::shuffle(tracers.begin(), tracers.end(), mt);
 		return tracers;
 	}

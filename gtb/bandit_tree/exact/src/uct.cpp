@@ -22,6 +22,7 @@ void CLASS::run(const vector<ID>& _targets) {
 			break;
 		}
 		iter++;
+		expansion();
 		if (expansion() and (path.size()-1) < setting.maxpat) {
 			auto res = simulation(path[path.size()-1], path.size()-1);
 			pattern = res.pattern;

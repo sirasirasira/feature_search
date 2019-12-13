@@ -67,7 +67,7 @@ bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
 		return true;
 }
 
-bool Gspan::scanGspan(const Pattern& pattern) {
+bool CLASS::scanGspan(const Pattern& pattern) {
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;
 	if (pattern.size() >= maxpat) {
