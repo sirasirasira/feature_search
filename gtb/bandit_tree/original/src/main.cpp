@@ -79,7 +79,6 @@ int main(int argc, char** argv) {
 		+ " [-s (double) shrinkage]"
 		+ " [-n (double) needed_impurity_decrease]"
 		+ " [-d max_depth]"
-		+ " [-i iteration]"
 		+ " [-h threshold]"
 		+ " [-c exploration_strength]"
 		+ " [-p stopping_rate]"
@@ -87,7 +86,7 @@ int main(int argc, char** argv) {
 		+ " traing_data_file"
 		+ " test_data_file"
 		+ "";
-	while ((opt = getopt(argc, argv, "m:x:t:s:n:d:i:h:c:p:b:re")) != -1) {
+	while ((opt = getopt(argc, argv, "m:x:t:s:n:d:h:c:p:b:re")) != -1) {
 		switch (opt) {
 			case 'm':
 				//setting.minsup = atoi(optarg);
@@ -107,9 +106,6 @@ int main(int argc, char** argv) {
 				break;
 			case 'd':
 				setting.max_depth = atoi(optarg);
-				break;
-			case 'i':
-				setting.iteration = atoi(optarg);
 				break;
 			case 'h':
 				setting.threshold = atoi(optarg);
@@ -160,6 +156,7 @@ int main(int argc, char** argv) {
 
 	db.gspan.minsup = setting.minsup;
 	db.gspan.maxpat = setting.maxpat;
+	mkdir("search", 0777);
 	db.gradient_boosting.run();
 
 	std::cout << "\e[38;5;0m\e[48;5;40m --- end ---  \e[m" << std::endl; // debug

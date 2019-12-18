@@ -27,7 +27,7 @@ void CLASS::prepare(const vector<ID>& _targets) {
 
 vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_t depth) {
 	// std::cout << "debug spliter run" << std::endl; // debug
-	TimeStart(tree_count, depth);
+	SearchStart(tree_count, depth);
 
 	targets = _targets;
 	best_pattern = {};

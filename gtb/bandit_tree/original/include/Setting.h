@@ -10,7 +10,6 @@ struct Setting {
 	double shrinkage = 1.0;
 	double needed_impurity_decrease = 0.0;
 	size_t max_depth = -1;
-	size_t iteration = 100;
 	size_t threshold = 1;
 	double exploration_strength = 1;
 	double stopping_rate = 1 - pow(10 , -1);
@@ -25,12 +24,11 @@ struct Setting {
 			<< " shrinkage " << shrinkage
 			<< " needed_impurity_decrease " << needed_impurity_decrease
 			<< " max_depth " << max_depth
-			<< " iteration " << iteration
 			<< " threshold " << threshold
 			<< " exploration_strength " << exploration_strength
 			<< " stopping_rate " << stopping_rate
 			<< " UCB:bound_rate " << bound_rate
-			<< " UCD_type" << ucd_type
+			<< " UCD_type " << ucd_type
 			<< endl;
 	}
 

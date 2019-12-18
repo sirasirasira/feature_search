@@ -1,10 +1,9 @@
-if [ $# -ne 2 ]
+if [ $# -ne 1 ]
 then
-	echo "please input maxsize iteration_num"
+	echo "please input maxsize "
 	exit
 fi
 
 x=$1
-i=$2
 
-./bin/gtb_bandit_tree -x ${x} -t 1 -d 1 -i ${i} -p -1 -c 1 ./data/nci/nci_train ./data/nci/nci_test
+./bin/gtb_bandit_tree_sim_exact -x ${x} -t 1 -d 1 -p -1 -c 1 ./data/nci/nci_train ./data/nci/nci_test

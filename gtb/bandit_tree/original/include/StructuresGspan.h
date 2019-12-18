@@ -28,6 +28,11 @@ struct DFSCode {
 
 using Pattern = vector<DFSCode>;
 
+struct PandT {
+	Pattern pattern;
+	GraphToTracers g2tracers;
+};
+
 inline Graph toGraph(const Pattern& codes) {
 	Graph g;
 	ID eid = 0;

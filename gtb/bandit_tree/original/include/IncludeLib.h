@@ -14,6 +14,7 @@
 #include <cmath>
 #include <cassert>
 #include <time.h>
+#include <sys/stat.h>
 
 using std::cout;
 using std::endl;

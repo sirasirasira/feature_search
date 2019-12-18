@@ -6,7 +6,7 @@
 class Spliter {
 	public:
 		void prepare(const vector<ID>& _targets);
-		vector<ID> run(const vector<ID>& _targets);
+		vector<ID> run(const vector<ID>& _targets, const size_t tree_count, size_t depth);
 		void update(const Pattern& pattern, double score);
 		bool isBounded(double min_bound);
 		inline bool valid() {
@@ -20,8 +20,29 @@ class Spliter {
 			assert(valid_flg);
 			return parent_score - min_score;
 		}
-		void TimeStart() {
-			search_start = clock();
+		void SearchStart(const size_t _tree_count, size_t _depth) {
+			search_idx++;
+			if (tree_count != _tree_count) {
+				tree_count = _tree_count;
+				search_idx = 0;
+			}
+			if (depth != _depth) {
+				depth = _depth;
+				search_idx = 0;
+			}
+			std::ostringstream oss;
+			oss << "./search/tree" << tree_count << "depth" << depth << "_" << search_idx << ".dat";
+			string filename = oss.str();
+			std::ofstream file;
+			file.open(filename, std::ios::out);
+		}
+		void Log(int gain_count, double min_score, Pattern pattern) {
+			std::ostringstream oss;
+			oss << "./search/tree" << tree_count << "depth" << depth << "_" << search_idx << ".dat";
+			string filename = oss.str();
+			std::ofstream file;
+			file.open(filename, std::ios::app);
+			file << gain_count << "," << min_score << "," << pattern << std::endl;
 		}
 
 	private:
@@ -30,7 +51,9 @@ class Spliter {
 		double parent_score;
 		double min_score;
 		Pattern best_pattern;
-		clock_t search_start;
+		size_t tree_count;
+		size_t depth;
+		size_t search_idx = 0;
 
 		void initMinScore();
 };

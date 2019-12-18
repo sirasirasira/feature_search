@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 		+ " [-s (double) shrinkage]"
 		+ " [-n (double) needed_impurity_decrease]"
 		+ " [-d max_depth]"
-		+ " [-z time_threshold]"
+		+ " [-z search_threshold]"
 		+ " traing_data_file"
 		+ " test_data_file"
 		+ "";
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
 				setting.max_depth = atoi(optarg);
 				break;
 			case 'z':
-				setting.time_threshold = atof(optarg);
+				setting.search_threshold = atoi(optarg);
 				break;
 			default:
 				std::cerr << usage << std::endl;
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 
 	db.gspan.minsup = setting.minsup;
 	db.gspan.maxpat = setting.maxpat;
-	db.spliter.time_threshold = setting.time_threshold;
+	db.spliter.search_threshold = setting.search_threshold;
 	mkdir("search", 0777);
 	db.gradient_boosting.run();
 

@@ -10,7 +10,7 @@ struct Setting {
 	double shrinkage = 1.0;
 	double needed_impurity_decrease = 0.0;
 	size_t max_depth = -1;
-	double time_threshold = 60;
+	double search_threshold = 1000;
 
 	void print() {
 		cout
@@ -20,7 +20,7 @@ struct Setting {
 			<< " shrinkage " << shrinkage
 			<< " needed_impurity_decrease " << needed_impurity_decrease
 			<< " max_depth " << max_depth
-			<< " time_threshold " << time_threshold
+			<< " search_threshold " << search_threshold
 			<< endl;
 	}
 

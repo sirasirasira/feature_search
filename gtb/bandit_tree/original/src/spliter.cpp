@@ -21,11 +21,9 @@ void CLASS::prepare(const vector<ID>& _targets) {
 	//std::cout << "prepare cache size: " << db.gspan.getCache().size() << std::endl;
 }
 
-vector<ID> CLASS::run(const vector<ID>& _targets) {
+vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_t depth) {
 	// std::cout << "spliter run" << std::endl; // debug
-	TimeStart();
-	std::ofstream file;
-	file.open("search.dat", std::ios::out);
+	SearchStart(tree_count, depth);
 	targets = _targets;
 	best_pattern = {};
 	initMinScore();
@@ -49,17 +47,12 @@ void CLASS::update(const Pattern& pattern, double score) {
 	if (score < min_score ) { // old pattern may be used (this func is called from gspan)
 		min_score = score;
 		best_pattern = pattern;
-		clock_t time = clock() - search_start;
 		int gain_count = db.gradient_boosting.getGainCount();
-		std::ofstream file;
-		file.open("search.dat", std::ios::app);
-		file << double(time) / CLOCKS_PER_SEC << "\t" << gain_count << "\t" << min_score / targets.size() << std::endl;
+		Log(gain_count, min_score, best_pattern);
 	}
 }
 
 bool CLASS::isBounded(double min_bound) {
-	// cout << "isBounded" << endl;
-	// cout << "min_score: " << min_score << " bound: " << min_bound << endl;
 	if (min_score <= min_bound) {
 		return true;
 	} else {

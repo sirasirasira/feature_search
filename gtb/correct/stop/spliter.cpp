@@ -27,8 +27,7 @@ void CLASS::prepare(const vector<ID>& _targets) {
 
 vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_t depth) {
 	// std::cout << "debug spliter run" << std::endl; // debug
-	TimeStart(tree_count, depth);
-
+	SearchStart(tree_count, depth);
 	targets = _targets;
 	best_pattern = {};
 	initMinScore();
@@ -51,7 +50,7 @@ G_INVALID:
 void CLASS::search() {
 	// std::cout << "serch Cache" << std::endl;
 	for (auto& pattern : e1patterns) {
-		if (TimeStop())	break;
+		if (SearchStop())	break;
 
 		const auto& g2tracers = cache[pattern].g2tracers;
 		vector<ID> posi = db.gspan.getPosiIds(g2tracers);
@@ -70,7 +69,7 @@ void CLASS::search_childs(const Pattern& pattern) {
 	} 
 	Pattern child = pattern;
 	for (auto& child_dfs : cache[pattern].childs) {
-		if (TimeStop())	break;
+		if (SearchStop())	break;
 
 		child.push_back(child_dfs);
 		const auto& g2tracers = cache[child].g2tracers;
@@ -87,8 +86,6 @@ void CLASS::search_childs(const Pattern& pattern) {
 }
 
 void CLASS::update(Pattern pattern, vector<ID> posi) {
-	if (TimeStop())	return;
-
 	double score = Calculator::score(db.ys, targets, posi);
 	if (score < min_score ) { // old pattern may be used (this func is called from gspan)
 		min_score = score;
@@ -96,6 +93,7 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 		int gain_count = db.gradient_boosting.getGainCount();
 		Log(gain_count, min_score, best_pattern);
 	}
+	search_node++;
 }
 
 bool CLASS::isBounded(vector<ID> posi) {

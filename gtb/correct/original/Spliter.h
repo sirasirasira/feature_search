@@ -46,7 +46,7 @@ class Spliter {
 		inline map<Pattern, CacheRecord>& getCache() {
 			return cache;
 		}
-		void TimeStart(const size_t _tree_count, size_t _depth) {
+		void SearchStart(const size_t _tree_count, size_t _depth) {
 			search_idx++;
 			if (tree_count != _tree_count) {
 				tree_count = _tree_count;
@@ -61,16 +61,14 @@ class Spliter {
 			string filename = oss.str();
 			std::ofstream file;
 			file.open(filename, std::ios::out);
-			search_start = clock();
 		}
 		void Log(int gain_count, double min_score, Pattern pattern) {
-			clock_t time = clock() - search_start;
 			std::ostringstream oss;
 			oss << "./search/tree" << tree_count << "depth" << depth << "_" << search_idx << ".dat";
 			string filename = oss.str();
 			std::ofstream file;
 			file.open(filename, std::ios::app);
-			file << double(time) / CLOCKS_PER_SEC << "," << gain_count << "," << min_score / targets.size() << "," << pattern << std::endl;
+			file << gain_count << "," << min_score << "," << pattern << std::endl;
 		}
 
 
@@ -85,7 +83,6 @@ class Spliter {
 		size_t tree_count;
 		size_t depth;
 		size_t search_idx = 0;
-		clock_t search_start;
 
 		void initMinScore();
 		void search();

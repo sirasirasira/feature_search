@@ -7,6 +7,7 @@ extern Setting setting;
 #include "Database.h"
 extern Database db;
 
+
 namespace Calculator {
 
 	inline bool isSameSign(double a, double b) {
@@ -20,6 +21,11 @@ namespace Calculator {
 	inline double calcDeviation(double ans, double pred) {
 		using namespace std;
 		return log(1 + exp(-2 * ans * pred));
+	}
+
+	inline double calcSS(double ans, double pred) {
+		using namespace std;
+		return pow(ans - pred, 2);
 	}
 
 	inline double calcResidualErr(double ans, double pred) {
@@ -86,21 +92,16 @@ namespace Calculator {
 	}
 
 	// assert raw_* is sorted
-	inline double score(const vector<double>& ys, const vector<ID>& targets, const vector<ID>& raw_posi) {
+	inline double score(const vector<double>& ys, const vector<ID>& targets, const vector<ID>& posi) {
 		db.gradient_boosting.incGainCount();
-		vector<ID> posi = setIntersec(targets, raw_posi); // TODO
-		/*
 		if (posi.size() < db.gspan.minsup) {
 			return DBL_MAX;
 		}
-		*/
 		vector<ID> nega = setDiff(targets, posi);
-		/*
 		if (nega.size() < db.gspan.minsup) {
 			return DBL_MAX;
 		}
-		*/
-		return imp(ys, posi) + imp(ys, nega);
+		return (imp(ys, posi) + imp(ys, nega)) / targets.size();
 	}
 
 	inline vector<ID> myCast(multimap<double, ID> sorted_posi_ids) {
@@ -112,10 +113,9 @@ namespace Calculator {
 	}
 
 	// assert raw_* is sorted
-	inline double bound(const vector<double>& ys, const vector<ID>& targets, const vector<ID>& raw_posi) {
+	inline double bound(const vector<double>& ys, const vector<ID>& targets, const vector<ID>& posi) {
 		db.gradient_boosting.incBoundCount();
 		double min_score = DBL_MAX;
-		vector<ID> posi = setIntersec(targets, raw_posi); // TODO
 		multimap<double, ID> sorted_posi_ids;
 		vector<ID> posi_ids;
 		vector<ID> nega_ids;
@@ -134,11 +134,10 @@ namespace Calculator {
 				ID move_id = *(posi_ids.rbegin());
 				posi_ids.pop_back();
 				nega_ids.push_back(move_id);
-				double score = imp(ys, posi_ids) + imp(ys, nega_ids);
+				double score = (imp(ys, posi_ids) + imp(ys, nega_ids)) / targets.size();
 				if (score < min_score) min_score = score;
 			}
 		}
 		return min_score;
 	}
-
 }
