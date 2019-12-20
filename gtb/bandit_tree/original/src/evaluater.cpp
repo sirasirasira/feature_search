@@ -23,7 +23,7 @@ void CLASS::calcACCAUCLoss(size_t tree_count, string type, vector<ID>& targets) 
 		double y = db.raw_ys[gid];
 		double p = db.y_predictions[gid];
 		pred_map[p].push_back(y);
-		if (Calculator::isSameSign(y, p)) num_correct++;
+		if (Calculator::isSameClass(y, p)) num_correct++;
 		loss_sum += Calculator::calcDeviation(y, p);
 		tss += Calculator::calcSS(y, p);
 	}

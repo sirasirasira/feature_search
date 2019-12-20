@@ -53,6 +53,7 @@ void CLASS::calcResidualErrors() {
 	// std::cout << "debug calcResidualErrors" << std::endl; // debug
 	for (ID id = 0; id < db.ys.size(); id++) {
 		db.ys[id] = Calculator::calcResidualErr(db.raw_ys[id], db.y_predictions[id]);
+		//cout << db.raw_ys[id] << ":" << db.y_predictions[id] << ":" << db.ys[id] << endl;
 	}
 	// Debug::ys(db.ys, "residual_errors"); // debug
 }

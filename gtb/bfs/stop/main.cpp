@@ -28,6 +28,9 @@ void read(std::istream& is) {
 			eid = 0;
 			int i;
 			stream >> c >> c >> i >> y;
+			if (y == -1) {
+				y = 0;
+			}
 			db.raw_ys.push_back(y);
 		} else if (line[0] == 'v') {
 			int l;

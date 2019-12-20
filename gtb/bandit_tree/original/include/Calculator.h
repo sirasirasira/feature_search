@@ -18,9 +18,20 @@ namespace Calculator {
 		}
 	}
 
+	inline bool isSameClass(double a, double b) {
+		if (a >= 0.5 and b >= 0.5) {
+			return true;
+		}
+		if (a < 0.5 and b < 0.5) {
+			return true;
+		}
+		return false;
+	}
+
 	inline double calcDeviation(double ans, double pred) {
 		using namespace std;
-		return log(1 + exp(-2 * ans * pred));
+		//return log(1 + exp(-2 * ans * pred));
+		return -ans * pred + log(1 + exp(pred));
 	}
 
 	inline double calcSS(double ans, double pred) {
@@ -30,7 +41,8 @@ namespace Calculator {
 
 	inline double calcResidualErr(double ans, double pred) {
 		using namespace std;
-		return -1 * (-2 * ans) / (exp(2 * ans * pred) + 1);
+		//return -1 * (-2 * ans) / (exp(2 * ans * pred) + 1);
+		return -1 * (-ans + 1 / (1 + exp(-pred)));
 	}
 
 	inline vector<ID> setDiff(const vector<ID>& a, const vector<ID>& b) {
