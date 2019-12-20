@@ -8,7 +8,7 @@ extern Database db;
 #include "Calculator.h" 
 
 void CLASS::initMinScore() {
-	parent_score = Calculator::imp(db.ys, Calculator::trainOnly(targets));
+	parent_score = Calculator::imp(db.ys, targets);
 	min_score = parent_score - setting.needed_impurity_decrease - std::numeric_limits<double>::epsilon();
 }
 
@@ -47,7 +47,7 @@ vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_
 void CLASS::update(const Pattern& pattern, double score) {
 	if (TimeStop())	return;
 
-	if (score < min_score ) { // old pattern may be used (this func is called from gspan)
+	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
 		int gain_count = db.gradient_boosting.getGainCount();

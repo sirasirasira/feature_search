@@ -6,4 +6,4 @@ fi
 
 x=$1
 
-./bin/gtb_bandit_tree_sim_exact -x ${x} -t 1 -d 1 -p -1 -c 1 ./data/nci/nci_train ./data/nci/nci_test
+./bin/gtb_bandit_tree -x ${x} -t 1 -d 1 -p -1 -c 1 ./data/nci/nci_train ./data/nci/nci_test

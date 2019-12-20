@@ -9,7 +9,7 @@ extern Database db;
 #include "StructuresGspan.h"
 
 void CLASS::initMinScore() {
-	parent_score = Calculator::imp(db.ys, Calculator::trainOnly(targets));
+	parent_score = Calculator::imp(db.ys, targets);
 	min_score = parent_score - setting.needed_impurity_decrease - std::numeric_limits<double>::epsilon();
 }
 
@@ -87,7 +87,7 @@ void CLASS::search_childs(const Pattern& pattern) {
 
 void CLASS::update(Pattern pattern, vector<ID> posi) {
 	double score = Calculator::score(db.ys, targets, posi);
-	if (score < min_score ) { // old pattern may be used (this func is called from gspan)
+	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
 		int gain_count = db.gradient_boosting.getGainCount();

@@ -39,7 +39,7 @@ void CLASS::makeTargets() {
 void CLASS::plantFirst() {
 	// std::cout << "debug plantFirst" << std::endl; // debug
 	double sum = 0;
-	for (ID id = db.gdata.getFirstTrainID(); id <= db.gdata.getLastTrainID(); id++) {
+	for (ID id : train_targets) {
 		sum += db.raw_ys[id];
 	}
 	double mean = sum / (double) db.gdata.num_train;

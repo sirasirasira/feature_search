@@ -11,7 +11,7 @@ void CLASS::run() {
 	// std::cout << "debug" << std::endl; // debug
 	auto& gdata = db.gdata;
 	map<Triplet, GraphToTracers> heap;
-	for (ID gid = 0; gid < (ID) gdata.size(); gid++) {
+	for (ID gid = 0; gid < (ID) gdata.num_train; gid++) {
 		EdgeTracer cursor;
 		Graph& g = gdata[gid];
 		for (ID vid = 0; vid < (ID) g.size(); vid++) {
@@ -87,7 +87,6 @@ void CLASS::edgeGrow() {
 			pattern.pop_back();
 			continue;
 		}
-		// cache insert
 		vector<DFSCode> childs;
 		cache.insert({pattern, CacheRecord(itr->second, childs)});
 		pattern.pop_back();
@@ -104,7 +103,6 @@ void CLASS::edgeGrow() {
 				pattern.pop_back();
 				continue;
 			}
-			// cache insert
 			vector<DFSCode> childs;
 			cache.insert({pattern, CacheRecord(itr2->second, childs)});
 			pattern.pop_back();
