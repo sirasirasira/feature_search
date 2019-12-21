@@ -45,7 +45,8 @@ double CLASS::calcAUC(const map<double, vector<double>>& pred_map) {
 		int count_true_label = 0;
 		int count_false_label = 0;
 		for (double label : vec) {
-			if (label > 0) {
+			//if (label > 0) {
+			if (label >= 0.5) {
 				count_true_label++;
 			} else {
 				count_false_label++;

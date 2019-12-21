@@ -10,12 +10,11 @@ struct Setting {
 	double shrinkage = 1.0;
 	double needed_impurity_decrease = 0.0;
 	size_t max_depth = -1;
+	double search_threshold = 1000;
 	size_t threshold = 1;
 	double exploration_strength = 1;
 	double stopping_rate = 1 - pow(10 , -1);
 	double bound_rate = 0;
-	size_t ucd_type = 1;
-	double time_threshold = 60;
 
 	void print() {
 		cout
@@ -25,12 +24,11 @@ struct Setting {
 			<< " shrinkage " << shrinkage
 			<< " needed_impurity_decrease " << needed_impurity_decrease
 			<< " max_depth " << max_depth
+			<< " search_threshold " << search_threshold
 			<< " threshold " << threshold
 			<< " exploration_strength " << exploration_strength
 			<< " stopping_rate " << stopping_rate
 			<< " UCB:bound_rate " << bound_rate
-			<< " UCD_type " << ucd_type
-			<< " time_threshold " << time_threshold
 			<< endl;
 	}
 

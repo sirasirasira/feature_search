@@ -83,12 +83,12 @@ void CLASS::search_childs(const Pattern& pattern) {
 }
 
 void CLASS::update(Pattern pattern, vector<ID> posi) {
+	search_node++;
 	double score = Calculator::score(db.ys, targets, posi);
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
-		int gain_count = db.gradient_boosting.getGainCount();
-		Log(gain_count, min_score, best_pattern);
+		Log(min_score, best_pattern);
 	}
 }
 

@@ -44,11 +44,11 @@ vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_
 }
 
 void CLASS::update(const Pattern& pattern, double score) {
+	search_node++;
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
-		int gain_count = db.gradient_boosting.getGainCount();
-		Log(gain_count, min_score, best_pattern);
+		Log(min_score, best_pattern);
 	}
 }
 

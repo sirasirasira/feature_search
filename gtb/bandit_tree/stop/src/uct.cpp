@@ -14,18 +14,27 @@ void CLASS::run(const vector<ID>& _targets) {
 	GraphToTracers g2tracers;
 	vector<ID> posi;
 	double score;
+	bool sim_flg;
 	iter = 0;
 
 	while (1) {
-		if(db.spliter.TimeStop()) {
-			break;
-		}
+		if (db.spliter.SearchStop())	break;
+
 		path = {root};
 		if (!selection(root)) { // all node is searched
 			break;
 		}
+		sim_flg = false;
 		iter++;
-		if (expansion() and (path.size()-1) < setting.maxpat) {
+
+		if (path.size()-1 < setting.maxpat) {
+			if (expansion()){
+				if(path.size()-1 < setting.maxpat) {
+					sim_flg = true;
+				}
+			}
+		}
+		if (sim_flg) {
 			auto res = simulation(path[path.size()-1], path.size()-1);
 			pattern = res.pattern;
 			g2tracers = res.g2tracers;
@@ -33,6 +42,7 @@ void CLASS::run(const vector<ID>& _targets) {
 			pattern = path[path.size()-1];
 			g2tracers = cache[pattern].g2tracers;
 		}
+
 		posi = db.gspan.getPosiIds(g2tracers);
 		score = Calculator::score(db.ys, targets, posi);
 		backpropagation(score);
@@ -47,6 +57,8 @@ bool CLASS::selection(const Pattern& pattern) {
 	double max_ucb = -DBL_MAX;
 	double ucb = 0;
 	for (auto& c : cache[pattern].childs) {
+		if (db.spliter.SearchStop())	break;
+
 		if (cache[c].prune) {
 			continue;
 		}
@@ -59,10 +71,9 @@ bool CLASS::selection(const Pattern& pattern) {
 				break;
 			}
 		} else {
-			ucb = (cache[c].sum_score / cache[c].count)
-				+ setting.exploration_strength
-				* (sqrt(2 * log(cache[pattern].count) / cache[c].count));
-			ucb -= setting.bound_rate * cache[c].bound; //TODO
+			ucb = (1-setting.bound_rate) * (cache[c].sum_score / cache[c].count)
+				+ setting.bound_rate * (-cache[c].bound)
+				+ setting.exploration_strength * (sqrt(log(cache[pattern].count) / 2 * cache[c].count));
 		}
 
 		if (ucb > max_ucb) {
@@ -86,15 +97,12 @@ bool CLASS::selection(const Pattern& pattern) {
 }
 
 bool CLASS::update(const Pattern& pattern) {
-	vector<ID> posi;
-	double score;
-	double bound;
-	posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
-	score = Calculator::score(db.ys, targets, posi);
+	vector<ID> posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
+	double score = Calculator::score(db.ys, targets, posi);
 	db.spliter.update(pattern, score);
-	bound = Calculator::bound(db.ys, targets, posi);
+	double bound = Calculator::bound(db.ys, targets, posi);
 	cache[pattern].bound = bound;
-	if (db.spliter.isBounded(bound)){
+	if (db.spliter.isBounded(bound) or pattern.size() >= setting.maxpat){
 		cache[pattern].prune = true;
 		return true;
 	}
@@ -130,6 +138,8 @@ bool CLASS::expansion() {
 bool CLASS::expand_selection(const Pattern& pattern) {
 	Pattern selected_child;
 	for (auto& c : cache[pattern].childs) {
+		if (db.spliter.SearchStop())	break;
+
 		if (update(c)) { // prune
 			continue;
 		} else { // not prune

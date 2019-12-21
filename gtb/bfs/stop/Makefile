@@ -25,6 +25,7 @@ cln : clean
 .PHONY: clean
 clean:
 	rm -f ${TARGETS} ${OBJS} $(D_DIR)/* *~
+	rm -rf search
 
 .PHONY: re
 re : clean all

@@ -21,6 +21,7 @@ class Spliter {
 			return parent_score - min_score;
 		}
 		void SearchStart(const size_t _tree_count, size_t _depth) {
+			search_node = 0;
 			search_idx++;
 			if (tree_count != _tree_count) {
 				tree_count = _tree_count;
@@ -36,13 +37,13 @@ class Spliter {
 			std::ofstream file;
 			file.open(filename, std::ios::out);
 		}
-		void Log(int gain_count, double min_score, Pattern pattern) {
+		void Log(double min_score, Pattern pattern) {
 			std::ostringstream oss;
 			oss << "./search/tree" << tree_count << "depth" << depth << "_" << search_idx << ".dat";
 			string filename = oss.str();
 			std::ofstream file;
 			file.open(filename, std::ios::app);
-			file << gain_count << "," << min_score << "," << pattern << std::endl;
+			file << search_node << "," << min_score << "," << pattern << std::endl;
 		}
 
 	private:
@@ -54,6 +55,7 @@ class Spliter {
 		size_t tree_count;
 		size_t depth;
 		size_t search_idx = 0;
+		int search_node;
 
 		void initMinScore();
 };

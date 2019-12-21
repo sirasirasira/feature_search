@@ -82,15 +82,15 @@ int main(int argc, char** argv) {
 		+ " [-s (double) shrinkage]"
 		+ " [-n (double) needed_impurity_decrease]"
 		+ " [-d max_depth]"
+		+ " [-z search_threshold]"
 		+ " [-h threshold]"
 		+ " [-c exploration_strength]"
 		+ " [-p stopping_rate]"
 		+ " [-b UCB:bound_rate]"
-		+ " [-z time_threshold]"
 		+ " traing_data_file"
 		+ " test_data_file"
 		+ "";
-	while ((opt = getopt(argc, argv, "m:x:t:s:n:d:h:c:p:b:z:re")) != -1) {
+	while ((opt = getopt(argc, argv, "m:x:t:s:n:d:z:h:c:p:b:re")) != -1) {
 		switch (opt) {
 			case 'm':
 				//setting.minsup = atoi(optarg);
@@ -111,6 +111,9 @@ int main(int argc, char** argv) {
 			case 'd':
 				setting.max_depth = atoi(optarg);
 				break;
+			case 'z':
+				setting.search_threshold = atoi(optarg);
+				break;
 			case 'h':
 				setting.threshold = atoi(optarg);
 				break;
@@ -122,9 +125,6 @@ int main(int argc, char** argv) {
 				break;
 			case 'b':
 				setting.bound_rate = atof(optarg);
-				break;
-			case 'z':
-				setting.time_threshold = atof(optarg);
 				break;
 			default:
 				std::cerr << usage << std::endl;
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
 
 	db.gspan.minsup = setting.minsup;
 	db.gspan.maxpat = setting.maxpat;
-	db.spliter.time_threshold = setting.time_threshold;
+	db.spliter.search_threshold = setting.search_threshold;
 	mkdir("search", 0777);
 	db.gradient_boosting.run();
 

@@ -189,7 +189,7 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 
 	Pattern pattern = _pattern;
 	map<Pattern, GraphToTracers> cache_tmp;
-	// cache_tmp[pattern] = cache_origin[pattern].g2tracers; //TODO not understand
+	cache_tmp[pattern] = cache[pattern].g2tracers;
 
 	size_t valid_flg; // 0:stop, 1:backward, 2:forward
 

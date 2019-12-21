@@ -28,7 +28,7 @@ void CLASS::run(const vector<ID>& _targets) {
 		if (path.size()-1 < setting.maxpat) {
 			if (expansion()){
 				if(path.size()-1 < setting.maxpat) {
-					//sim_flg = true;
+					sim_flg = true;
 				}
 			}
 		}
@@ -67,10 +67,9 @@ bool CLASS::selection(const Pattern& pattern) {
 				break;
 			}
 		} else {
-			ucb = (cache[c].sum_score / cache[c].count)
-				+ setting.exploration_strength
-				* (sqrt(2 * log(cache[pattern].count) / cache[c].count));
-			ucb -= setting.bound_rate * cache[c].bound; //TODO
+			ucb = (1-setting.bound_rate) * (cache[c].sum_score / cache[c].count)
+				+ setting.bound_rate * (-cache[c].bound)
+				+ setting.exploration_strength * (sqrt(log(cache[pattern].count) / 2 * cache[c].count));
 		}
 
 		if (ucb > max_ucb) {

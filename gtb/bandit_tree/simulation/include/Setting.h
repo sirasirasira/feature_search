@@ -14,7 +14,6 @@ struct Setting {
 	double exploration_strength = 1;
 	double stopping_rate = 1 - pow(10 , -1);
 	double bound_rate = 0;
-	size_t ucd_type = 1;
 
 	void print() {
 		cout
@@ -28,7 +27,6 @@ struct Setting {
 			<< " exploration_strength " << exploration_strength
 			<< " stopping_rate " << stopping_rate
 			<< " UCB:bound_rate " << bound_rate
-			<< " UCD_type " << ucd_type
 			<< endl;
 	}
 

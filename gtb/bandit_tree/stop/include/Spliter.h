@@ -5,7 +5,7 @@
 
 class Spliter {
 	public:
-		double time_threshold;
+		int search_threshold;
 
 		void prepare(const vector<ID>& _targets);
 		vector<ID> run(const vector<ID>& _targets, const size_t tree_count, size_t depth);
@@ -22,7 +22,8 @@ class Spliter {
 			assert(valid_flg);
 			return parent_score - min_score;
 		}
-		void TimeStart(const size_t _tree_count, size_t _depth) {
+		void SearchStart(const size_t _tree_count, size_t _depth) {
+			search_node = 0;
 			search_idx++;
 			if (tree_count != _tree_count) {
 				tree_count = _tree_count;
@@ -37,21 +38,17 @@ class Spliter {
 			string filename = oss.str();
 			std::ofstream file;
 			file.open(filename, std::ios::out);
-			search_start = clock();
 		}
-		void Log(int gain_count, double min_score, Pattern pattern) {
-			clock_t time = clock() - search_start;
+		void Log(double min_score, Pattern pattern) {
 			std::ostringstream oss;
 			oss << "./search/tree" << tree_count << "depth" << depth << "_" << search_idx << ".dat";
 			string filename = oss.str();
 			std::ofstream file;
 			file.open(filename, std::ios::app);
-			file << double(time) / CLOCKS_PER_SEC << "," << gain_count << "," << min_score / targets.size() << "," << pattern << std::endl;
+			file << search_node << "," << min_score << "," << pattern << std::endl;
 		}
-		bool TimeStop() {
-			clock_t time = clock() - search_start;
-			double time_s = double(time) / CLOCKS_PER_SEC;
-			if (time_s > time_threshold) {
+		bool SearchStop() {
+			if (search_node >= search_threshold) {
 				return true;
 			}
 			return false;
@@ -66,7 +63,7 @@ class Spliter {
 		size_t tree_count;
 		size_t depth;
 		size_t search_idx = 0;
-		clock_t search_start;
+		int search_node;
 
 		void initMinScore();
 };

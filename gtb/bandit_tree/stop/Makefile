@@ -32,6 +32,7 @@ cln: clean
 .PHONY: clean
 clean:
 	rm -f $(OBJS) $(DPNS) $(TARGETS) *~
+	rm -rf search
 
 .PHONY: re
 re: clean all
