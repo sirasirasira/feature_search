@@ -123,3 +123,23 @@ inline std::ostream& operator << (std::ostream& os, const Pattern pattern) {
 	}
 	return os;
 }
+
+inline std::ostream& operator << (std::ostream& os, GraphToTracers& g2tracers) {
+	os << "g2tracers" << "\n";
+	for (auto x = g2tracers.begin(); x != g2tracers.end(); x++) {
+		os << "gid: " << x->first << "\n";
+		EdgeTracer* tracer;
+		for (auto itr = x->second.begin(); itr != x->second.end(); itr++ ) {
+			tracer = &(*itr);
+			os << "(" << tracer->vpair.id ;
+			tracer = tracer->predec;
+			while (tracer != nullptr) {
+				os << " " << tracer->vpair.id;
+				tracer = tracer->predec;
+			}
+			os << "), ";
+		}
+		os << "\n";
+	}
+	return os;
+}

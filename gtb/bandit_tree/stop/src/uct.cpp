@@ -16,9 +16,12 @@ void CLASS::run(const vector<ID>& _targets) {
 	double score;
 	bool sim_flg;
 	iter = 0;
+	search_node = 0;
 
 	while (1) {
-		if (db.spliter.SearchStop())	break;
+		if (search_node >= search_threshold) {
+			break;
+		}
 
 		path = {root};
 		if (!selection(root)) { // all node is searched
@@ -27,13 +30,12 @@ void CLASS::run(const vector<ID>& _targets) {
 		sim_flg = false;
 		iter++;
 
-		if (path.size()-1 < setting.maxpat) {
-			if (expansion()){
-				if(path.size()-1 < setting.maxpat) {
-					sim_flg = true;
-				}
+		if (expansion()){
+			if(path.size()-1 < setting.maxpat) {
+				sim_flg = true;
 			}
 		}
+
 		if (sim_flg) {
 			auto res = simulation(path[path.size()-1], path.size()-1);
 			pattern = res.pattern;
@@ -57,8 +59,6 @@ bool CLASS::selection(const Pattern& pattern) {
 	double max_ucb = -DBL_MAX;
 	double ucb = 0;
 	for (auto& c : cache[pattern].childs) {
-		if (db.spliter.SearchStop())	break;
-
 		if (cache[c].prune) {
 			continue;
 		}
@@ -74,11 +74,10 @@ bool CLASS::selection(const Pattern& pattern) {
 			ucb = (1-setting.bound_rate) * (cache[c].sum_score / cache[c].count)
 				+ setting.bound_rate * (-cache[c].bound)
 				+ setting.exploration_strength * (sqrt(log(cache[pattern].count) / 2 * cache[c].count));
-		}
-
-		if (ucb > max_ucb) {
-			best_child = c;
-			max_ucb = ucb;
+			if (ucb > max_ucb) {
+				best_child = c;
+				max_ucb = ucb;
+			}
 		}
 	}
 
@@ -97,6 +96,9 @@ bool CLASS::selection(const Pattern& pattern) {
 }
 
 bool CLASS::update(const Pattern& pattern) {
+	// std::cout << "update: " << pattern << endl; // debug
+	search_node++;
+
 	vector<ID> posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
 	double score = Calculator::score(db.ys, targets, posi);
 	db.spliter.update(pattern, score);
@@ -112,6 +114,10 @@ bool CLASS::update(const Pattern& pattern) {
 bool CLASS::expansion() {
 	const Pattern pattern = path[path.size()-1];
 	// std::cout << "expansion: " << pattern << endl; // debug
+	if (pattern.size() >= setting.maxpat) {
+		cache[pattern].prune = true;
+		return false;
+	}
 	if (cache[pattern].count < setting.threshold) {
 		return true;
 	}
@@ -138,8 +144,6 @@ bool CLASS::expansion() {
 bool CLASS::expand_selection(const Pattern& pattern) {
 	Pattern selected_child;
 	for (auto& c : cache[pattern].childs) {
-		if (db.spliter.SearchStop())	break;
-
 		if (update(c)) { // prune
 			continue;
 		} else { // not prune

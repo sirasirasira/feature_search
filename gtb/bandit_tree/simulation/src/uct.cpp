@@ -25,13 +25,12 @@ void CLASS::run(const vector<ID>& _targets) {
 		sim_flg = false;
 		iter++;
 
-		if (path.size()-1 < setting.maxpat) {
-			if (expansion()){
-				if(path.size()-1 < setting.maxpat) {
-					sim_flg = true;
-				}
+		if (expansion()){
+			if(path.size()-1 < setting.maxpat) {
+				sim_flg = true;
 			}
 		}
+
 		if (sim_flg) {
 			auto res = simulation(path[path.size()-1], path.size()-1);
 			pattern = res.pattern;
@@ -70,11 +69,10 @@ bool CLASS::selection(const Pattern& pattern) {
 			ucb = (1-setting.bound_rate) * (cache[c].sum_score / cache[c].count)
 				+ setting.bound_rate * (-cache[c].bound)
 				+ setting.exploration_strength * (sqrt(log(cache[pattern].count) / 2 * cache[c].count));
-		}
-
-		if (ucb > max_ucb) {
-			best_child = c;
-			max_ucb = ucb;
+			if (ucb > max_ucb) {
+				best_child = c;
+				max_ucb = ucb;
+			}
 		}
 	}
 
@@ -93,6 +91,7 @@ bool CLASS::selection(const Pattern& pattern) {
 }
 
 bool CLASS::update(const Pattern& pattern) {
+	// std::cout << "update: " << pattern << endl; // debug
 	vector<ID> posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
 	double score = Calculator::score(db.ys, targets, posi);
 	db.spliter.update(pattern, score);
@@ -108,6 +107,10 @@ bool CLASS::update(const Pattern& pattern) {
 bool CLASS::expansion() {
 	const Pattern pattern = path[path.size()-1];
 	// std::cout << "expansion: " << pattern << endl; // debug
+	if (pattern.size() >= setting.maxpat) {
+		cache[pattern].prune = true;
+		return false;
+	}
 	if (cache[pattern].count < setting.threshold) {
 		return true;
 	}

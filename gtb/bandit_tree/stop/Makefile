@@ -16,7 +16,7 @@ EXE_DIR = bin
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 DPNS = $(addprefix $(DPN_DIR)/, $(notdir $(SRCS:.cpp=.d)))
-TARGETS = $(EXE_DIR)/gtb_bandit_tree_sim_stop
+TARGETS = $(EXE_DIR)/gtb_bandit_tree_sim
 
 all: $(TARGETS)
 

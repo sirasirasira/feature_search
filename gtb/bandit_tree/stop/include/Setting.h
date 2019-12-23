@@ -10,7 +10,7 @@ struct Setting {
 	double shrinkage = 1.0;
 	double needed_impurity_decrease = 0.0;
 	size_t max_depth = -1;
-	double search_threshold = 1000;
+	int search_threshold = 1000;
 	size_t threshold = 1;
 	double exploration_strength = 1;
 	double stopping_rate = 1 - pow(10 , -1);

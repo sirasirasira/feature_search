@@ -70,9 +70,7 @@ bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
 bool CLASS::scanGspan(const Pattern& pattern) {
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
 	cache[pattern].scan = true;
-	if (pattern.size() >= maxpat) {
-		return false;
-	}
+
 	// build right most path
 	vector<size_t> rm_path_index;
 	scan_rm(pattern, rm_path_index);

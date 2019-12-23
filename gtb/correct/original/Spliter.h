@@ -47,6 +47,7 @@ class Spliter {
 			return cache;
 		}
 		void SearchStart(const size_t _tree_count, size_t _depth) {
+			start = clock();
 			search_node = 0;
 			search_idx++;
 			if (tree_count != _tree_count) {
@@ -64,12 +65,13 @@ class Spliter {
 			file.open(filename, std::ios::out);
 		}
 		void Log(double min_score, Pattern pattern) {
+			clock_t time = clock() - start;
 			std::ostringstream oss;
 			oss << "./search/tree" << tree_count << "depth" << depth << "_" << search_idx << ".dat";
 			string filename = oss.str();
 			std::ofstream file;
 			file.open(filename, std::ios::app);
-			file << search_node << "," << min_score << "," << pattern << std::endl;
+			file << double(time) / CLOCKS_PER_SEC << "," << search_node << "," << min_score << "," << pattern << std::endl;
 		}
 
 
@@ -84,6 +86,7 @@ class Spliter {
 		size_t tree_count;
 		size_t depth;
 		size_t search_idx = 0;
+		clock_t start;
 		int search_node;
 
 		void initMinScore();

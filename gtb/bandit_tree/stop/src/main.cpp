@@ -28,9 +28,6 @@ void read(std::istream& is) {
 			eid = 0;
 			int i;
 			stream >> c >> c >> i >> y;
-			if (y == -1) {
-				y = 0;
-			}
 			db.raw_ys.push_back(y);
 		} else if (line[0] == 'v') {
 			int l;
@@ -163,8 +160,7 @@ int main(int argc, char** argv) {
 
 	db.gspan.minsup = setting.minsup;
 	db.gspan.maxpat = setting.maxpat;
-	db.spliter.search_threshold = setting.search_threshold;
-	mkdir("search", 0777);
+	db.uct.search_threshold = setting.search_threshold;
 	db.gradient_boosting.run();
 
 	std::cout << "\e[38;5;0m\e[48;5;40m --- end ---  \e[m" << std::endl; // debug

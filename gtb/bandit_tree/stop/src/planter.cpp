@@ -8,22 +8,22 @@ extern Database db;
 #include "Calculator.h"
 
 // each value of additive_ys must be overwritten only once
-const vector<double>& CLASS::run(const vector<ID>& train_targets, const vector<ID>& test_targets, const size_t tree_count) {
+const vector<double>& CLASS::run(const vector<ID>& train_targets, const vector<ID>& test_targets) {
 	// std::cout << "debug Planter run" << std::endl; // debug
 	cout << "BEGIN_tree" << endl;
-	grow(train_targets, test_targets, tree_count, 0);
+	grow(train_targets, test_targets, 0);
 	cout << "END_tree" << endl;
 	return additive_ys;
 }
 
-void CLASS::grow(const vector<ID>& train_targets, const vector<ID>& test_targets, const size_t tree_count, size_t depth) {
+void CLASS::grow(const vector<ID>& train_targets, const vector<ID>& test_targets, size_t depth) {
 	// std::cout << "debug grow, depth " << depth << endl; // debug
 	// Debug::IDs(targets, "targets "); // debug
 	if (checkLeafConditions(train_targets, depth)) {
 		makeLeaf(train_targets, test_targets, depth);
 		return;
 	}
-	vector<ID> posi_train_targets = db.spliter.run(train_targets, tree_count, depth);
+	vector<ID> posi_train_targets = db.spliter.run(train_targets);
 	if (db.spliter.valid() == false) {
 		makeLeaf(train_targets, test_targets, depth);
 		return;
@@ -31,11 +31,11 @@ void CLASS::grow(const vector<ID>& train_targets, const vector<ID>& test_targets
 	const auto best_pattern = db.spliter.getBestPattern();
 	db.gspan.updateFeatureImportance(best_pattern, db.spliter.getImportance());
 	vector<ID> posi_test_targets = db.finder.run(best_pattern, test_targets);
-	grow(posi_train_targets, posi_test_targets, tree_count, depth + 1);
+	grow(posi_train_targets, posi_test_targets, depth + 1);
 	cout << string(depth, '-') << "* " << best_pattern << endl;
 	vector<ID> nega_train_targets = Calculator::setDiff(train_targets, posi_train_targets);
 	vector<ID> nega_test_targets = Calculator::setDiff(test_targets, posi_test_targets);
-	grow(nega_train_targets, nega_test_targets, tree_count, depth + 1);
+	grow(nega_train_targets, nega_test_targets, depth + 1);
 }
 
 bool CLASS::checkLeafConditions(const vector<ID>& targets, size_t depth) {

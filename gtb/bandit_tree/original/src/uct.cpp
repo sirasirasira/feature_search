@@ -16,6 +16,8 @@ void CLASS::run(const vector<ID>& _targets) {
 	double score;
 	bool sim_flg;
 	iter = 0;
+double time = 0;
+double num = 0;
 
 	while (1) {
 		path = {root};
@@ -25,15 +27,17 @@ void CLASS::run(const vector<ID>& _targets) {
 		sim_flg = false;
 		iter++;
 
-		if (path.size()-1 < setting.maxpat) {
-			if (expansion()){
-				if(path.size()-1 < setting.maxpat) {
-					//sim_flg = true;
-				}
+		if (expansion()){
+			if(path.size()-1 < setting.maxpat) {
+				sim_flg = true;
 			}
 		}
+
 		if (sim_flg) {
+			num++;
+			clock_t start = clock();
 			pattern = simulation(path[path.size()-1], path.size()-1);
+			time += (clock() - double(start)) /CLOCKS_PER_SEC;
 		} else {
 			pattern = path[path.size()-1];
 		}
@@ -42,6 +46,7 @@ void CLASS::run(const vector<ID>& _targets) {
 		score = Calculator::score(db.ys, targets, posi);
 		backpropagation(score);
 	}
+	cout << num << ":" << time << endl;
 }
 
 bool CLASS::selection(const Pattern& pattern) {
@@ -67,18 +72,17 @@ bool CLASS::selection(const Pattern& pattern) {
 			ucb = (1-setting.bound_rate) * (cache[c].sum_score / cache[c].count)
 				+ setting.bound_rate * (-cache[c].bound)
 				+ setting.exploration_strength * (sqrt(log(cache[pattern].count) / 2 * cache[c].count));
-		}
-
-		if (ucb > max_ucb) {
-			best_child = c;
-			max_ucb = ucb;
+			if (ucb > max_ucb) {
+				best_child = c;
+				max_ucb = ucb;
+			}
 		}
 	}
 
 	if (best_child.size() != 0) {
 		path.push_back(best_child);
 		return selection(best_child);
-	} else {
+	} else { // all childs are pruned
 		if (path.size() == 1) { // all node is pruned
 			return false;
 		} else {
@@ -106,23 +110,27 @@ bool CLASS::update(const Pattern& pattern) {
 bool CLASS::expansion() {
 	const Pattern pattern = path[path.size()-1];
 	// std::cout << "expansion: " << pattern << endl; // debug
+	if (pattern.size() >= setting.maxpat) {
+		cache[pattern].prune = true;
+		return false;
+	}
 	if (cache[pattern].count < setting.threshold) {
 		return true;
 	}
 
 	if (!cache[pattern].scan) {
-		if (db.gspan.scanGspan(pattern)) {
+		if (db.gspan.scanGspan(pattern)) { // have child
 			cache[pattern].terminal = false;
 			return expand_selection(pattern);
-		} else {
+		} else { // not have child
 			cache[pattern].prune = true;
 			return false;
 		}
 	} else {
-		if (cache[pattern].childs.size()) {
+		if (cache[pattern].childs.size()) { // have child
 			cache[pattern].terminal = false;
 			return expand_selection(pattern);
-		} else {
+		} else { // not have child
 			cache[pattern].prune = true;
 			return false;
 		}

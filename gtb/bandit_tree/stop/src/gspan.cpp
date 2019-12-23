@@ -216,22 +216,18 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				gids[i] = x->first;
 				i++;
 			}
-			gids = Dice::shuffle_ids(gids);
-			auto& gdata = db.gdata;
-			for (auto gid : gids) {
-				Graph& g = gdata[gid];
-				Tracers tracers = cache_tmp[pattern][gid];
+			Dice::shuffle_ids(gids);
+			for (auto& gid : gids) {
+				Graph& g = db.gdata[gid];
 
 				// random edge expansion
 				EdgeTracer* tracer;
 				DFSCode dcode;
-				tracers = Dice::shuffle_tracers(tracers);
-				for (auto itr_t = tracers.begin(); itr_t != tracers.end(); ++itr_t ) {
+				vector<ID> tids = Dice::shuffle(cache_tmp[pattern][gid].size());
+				for (auto tid : tids) { 
+					tracer = &(cache_tmp[pattern][gid][tid]);
 					// an instance (a sequence of vertex pairs) as vector "vpair"
-					tracer = &(*itr_t);
 
-					//vector<bool> discovered(g.size());
-					//vector<bool> tested(g.num_of_edges);
 					vector<char> discovered(g.size(), false); // as bool vector
 					vector<char> tested(g.num_of_edges, false); // as bool vector
 
@@ -340,7 +336,7 @@ check:
 						}
 					}
 				}
-				cache_tmp[pattern] = g2tracers_new;
+				cache_tmp.insert({pattern, g2tracers_new});
 			}
 		}
 	} while (!stop_condition(pattern, valid_flg, base_pattern_size));

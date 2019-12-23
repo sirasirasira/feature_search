@@ -21,9 +21,8 @@ void CLASS::prepare(const vector<ID>& _targets) {
 	//std::cout << "prepare cache size: " << db.gspan.getCache().size() << std::endl;
 }
 
-vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_t depth) {
+vector<ID> CLASS::run(const vector<ID>& _targets) {
 	// std::cout << "spliter run" << std::endl; // debug
-	SearchStart(tree_count, depth);
 	targets = _targets;
 	best_pattern = {};
 	initMinScore();
@@ -44,11 +43,9 @@ vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_
 }
 
 void CLASS::update(const Pattern& pattern, double score) {
-	search_node++;
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
-		Log(min_score, best_pattern);
 	}
 }
 

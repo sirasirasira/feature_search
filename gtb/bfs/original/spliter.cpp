@@ -52,6 +52,7 @@ void CLASS::search() {
 	// std::cout << "serch Cache" << std::endl;
 	// e1patterns to pq_bound
 	for (auto& pattern : e1patterns) {
+
 		const auto& g2tracers = cache[pattern].g2tracers;
 		vector<ID> posi = db.gspan.getPosiIds(g2tracers);
 		update(pattern, posi);
@@ -73,6 +74,7 @@ void CLASS::search() {
 			db.gspan.run(pattern);
 		}
 		for (auto& c : record.childs) {
+
 			pattern.push_back(c);
 			auto posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
 			update(pattern, posi);

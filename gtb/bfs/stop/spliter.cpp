@@ -25,9 +25,8 @@ void CLASS::prepare(const vector<ID>& _targets) {
 	std::cout << "prepare cache size: " << cache.size() << std::endl;
 }
 
-vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_t depth) {
+vector<ID> CLASS::run(const vector<ID>& _targets) {
 	// std::cout << "debug spliter run" << std::endl; // debug
-	SearchStart(tree_count, depth);
 
 	targets = _targets;
 	best_pattern = {};
@@ -52,7 +51,9 @@ void CLASS::search() {
 	// std::cout << "serch Cache" << std::endl;
 	// e1patterns to pq_bound
 	for (auto& pattern : e1patterns) {
-		if (SearchStop())	break;
+		if (search_node >= search_threshold) {
+			break;
+		}
 
 		const auto& g2tracers = cache[pattern].g2tracers;
 		vector<ID> posi = db.gspan.getPosiIds(g2tracers);
@@ -63,8 +64,6 @@ void CLASS::search() {
 
 	// pq_bound search
 	while (!pq_bound.empty()) {
-		if (SearchStop())	break;
-
 		double min_bound = pq_bound.top().first;
 		if (min_score <= min_bound) {
 			break;
@@ -77,7 +76,9 @@ void CLASS::search() {
 			db.gspan.run(pattern);
 		}
 		for (auto& c : record.childs) {
-			if (SearchStop())	break;
+			if (search_node >= search_threshold) {
+				break;
+			}
 
 			pattern.push_back(c);
 			auto posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
@@ -95,7 +96,6 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
-		Log(min_score, best_pattern);
 	}
 }
 

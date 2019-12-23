@@ -6,6 +6,8 @@
 
 class UCT {
 	public:
+		int search_threshold;
+
 		UCT(map<Pattern, CacheRecord>& _cache, const Pattern& _root) : cache(_cache), root(_root) {}
 		void run(const vector<ID>& _targets);
 		int getIter() {
@@ -18,6 +20,7 @@ class UCT {
 		const Pattern& root;
 		vector<Pattern> path;
 		int iter;
+		int search_node;
 
 		bool selection(const Pattern&);
 		bool update(const Pattern&);
