@@ -162,7 +162,8 @@ bool CLASS::scanGspan(const Pattern& pattern) {
 			continue;
 		}
 		scan_flg = true;
-		cache.insert({child, CacheRecord(itr->second, childs)});
+		cache[child] = CacheRecord(itr->second, childs); // Edgesimulation may initialize new pattern -> not use insert()
+
 		cache[pattern].childs.push_back(child);
 	}
 
@@ -177,7 +178,7 @@ bool CLASS::scanGspan(const Pattern& pattern) {
 				continue;
 			}
 			scan_flg = true;
-			cache.insert({child, CacheRecord(itr2->second, childs)});
+			cache[child] = CacheRecord(itr2->second, childs); // Edgesimulation may initialize new pattern -> not use insert()
 			cache[pattern].childs.push_back(child);
 		}
 	}
