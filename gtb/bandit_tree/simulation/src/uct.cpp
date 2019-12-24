@@ -9,6 +9,7 @@ extern Database db;
 void CLASS::run(const vector<ID>& _targets) {
 	// std::cout << "uct run" << std::endl; // debug
 	targets = _targets;
+	before_mse = Calculator::TSS(db.ys, targets) / targets.size();
 	db.gspan.clearUCB();
 	Pattern pattern;
 	GraphToTracers g2tracers;
@@ -41,7 +42,7 @@ void CLASS::run(const vector<ID>& _targets) {
 		}
 
 		posi = db.gspan.getPosiIds(g2tracers);
-		score = Calculator::score(db.ys, targets, posi);
+		score = Calculator::score(db.ys, targets, posi) / before_mse; // range [0, 1]
 		backpropagation(score);
 	}
 }
@@ -96,7 +97,7 @@ bool CLASS::update(const Pattern& pattern) {
 	double score = Calculator::score(db.ys, targets, posi);
 	db.spliter.update(pattern, score);
 	double bound = Calculator::bound(db.ys, targets, posi);
-	cache[pattern].bound = bound;
+	cache[pattern].bound = bound / before_mse; // range [0, 1]
 	if (db.spliter.isBounded(bound) or pattern.size() >= setting.maxpat){
 		cache[pattern].prune = true;
 		return true;

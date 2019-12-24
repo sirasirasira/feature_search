@@ -9,6 +9,7 @@ extern Database db;
 void CLASS::run(const vector<ID>& _targets) {
 	// std::cout << "uct run" << std::endl; // debug
 	targets = _targets;
+	before_mse = Calculator::TSS(db.ys, targets) / targets.size();
 	db.gspan.clearUCB();
 	Pattern pattern;
 	GraphToTracers g2tracers;
@@ -16,8 +17,6 @@ void CLASS::run(const vector<ID>& _targets) {
 	double score;
 	bool sim_flg;
 	iter = 0;
-double time = 0;
-double num = 0;
 
 	while (1) {
 		path = {root};
@@ -34,19 +33,15 @@ double num = 0;
 		}
 
 		if (sim_flg) {
-			num++;
-			clock_t start = clock();
 			pattern = simulation(path[path.size()-1], path.size()-1);
-			time += (clock() - double(start)) /CLOCKS_PER_SEC;
 		} else {
 			pattern = path[path.size()-1];
 		}
 
 		posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
-		score = Calculator::score(db.ys, targets, posi);
+		score = Calculator::score(db.ys, targets, posi) / before_mse; // range [0, 1]
 		backpropagation(score);
 	}
-	cout << num << ":" << time << endl;
 }
 
 bool CLASS::selection(const Pattern& pattern) {
@@ -99,7 +94,7 @@ bool CLASS::update(const Pattern& pattern) {
 	double score = Calculator::score(db.ys, targets, posi);
 	db.spliter.update(pattern, score);
 	double bound = Calculator::bound(db.ys, targets, posi);
-	cache[pattern].bound = bound;
+	cache[pattern].bound = bound / before_mse; // range [0, 1]
 	if (db.spliter.isBounded(bound) or pattern.size() >= setting.maxpat){
 		cache[pattern].prune = true;
 		return true;

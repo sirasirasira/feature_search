@@ -18,6 +18,7 @@ class UCT {
 		const Pattern& root;
 		vector<Pattern> path;
 		int iter;
+		double before_mse;
 
 		bool selection(const Pattern&);
 		bool update(const Pattern&);

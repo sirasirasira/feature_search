@@ -20,6 +20,7 @@ class UCT {
 		const Pattern& root;
 		vector<Pattern> path;
 		int iter;
+		double before_mse;
 		int search_node;
 
 		bool selection(const Pattern&);
