@@ -14,7 +14,6 @@ struct Setting {
 	size_t threshold = 1;
 	double exploration_strength = 1;
 	double stopping_rate = 1 - pow(10 , -1);
-	double bound_rate = 0;
 
 	void print() {
 		cout
@@ -28,7 +27,6 @@ struct Setting {
 			<< " threshold " << threshold
 			<< " exploration_strength " << exploration_strength
 			<< " stopping_rate " << stopping_rate
-			<< " UCB:bound_rate " << bound_rate
 			<< endl;
 	}
 

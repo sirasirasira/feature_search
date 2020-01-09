@@ -9,7 +9,6 @@ struct CacheRecord {
 	GraphToTracers g2tracers;
 	vector<Pattern> childs;
 	bool terminal;
-	double bound;
 	size_t count;
 	double sum_score;
 	double feature_importance;
@@ -17,7 +16,6 @@ struct CacheRecord {
 	bool prune;
 	CacheRecord() {
 		terminal = true;
-		bound = 0;
 		count = 0;
 		sum_score = 0;
 		feature_importance = 0;
@@ -27,7 +25,6 @@ struct CacheRecord {
 	CacheRecord(vector<Pattern> childs)
 		: childs(childs){
 			terminal = true;
-			bound = 0;
 			count = 0;
 			sum_score = 0;
 			feature_importance = 0;
@@ -37,7 +34,6 @@ struct CacheRecord {
 	CacheRecord(GraphToTracers g2tracers, vector<Pattern> childs)
 		: g2tracers(g2tracers), childs(childs){
 			terminal = true;
-			bound = 0;
 			count = 0;
 			sum_score = 0;
 			feature_importance = 0;
@@ -94,7 +90,6 @@ class Gspan {
 		inline void clearUCB() {
 			for (auto& x : cache) {
 				x.second.terminal = true;
-				x.second.bound = 0;
 				x.second.count = 0;
 				x.second.sum_score = 0;
 				x.second.prune = false;

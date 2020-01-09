@@ -54,17 +54,19 @@ void CLASS::run(const vector<ID>& _targets) {
 
 bool CLASS::selection(const Pattern& pattern) {
 	// std::cout << "selection: " << pattern << std::endl; // debug
-	if (cache[pattern].terminal) return true;
+	auto& precord = cache[pattern];
+	if (precord.terminal) return true;
 
 	Pattern best_child;
 	double max_ucb = -DBL_MAX;
 	double ucb = 0;
-	for (auto& c : cache[pattern].childs) {
-		if (cache[c].prune) {
+	for (auto& c : precord.childs) {
+		auto& crecord = cache[c];
+		if (crecord.prune) {
 			continue;
 		}
 
-		if (cache[c].count == 0) {
+		if (crecord.count == 0) {
 			if (update(c)) { // prune
 				continue;
 			} else { // not prune
@@ -72,9 +74,8 @@ bool CLASS::selection(const Pattern& pattern) {
 				break;
 			}
 		} else {
-			ucb = (1-setting.bound_rate) * (cache[c].sum_score / cache[c].count)
-				+ setting.bound_rate * (-cache[c].bound)
-				+ setting.exploration_strength * (sqrt(log(cache[pattern].count) / 2 * cache[c].count));
+			ucb = (crecord.sum_score / crecord.count)
+				+ setting.exploration_strength * (sqrt(log(precord.count) / 2 * crecord.count));
 			if (ucb > max_ucb) {
 				best_child = c;
 				max_ucb = ucb;
@@ -89,7 +90,7 @@ bool CLASS::selection(const Pattern& pattern) {
 		if (path.size() == 1) { // all node is pruned
 			return false;
 		} else {
-			cache[pattern].prune = true;
+			precord.prune = true;
 			path.pop_back();
 			return selection(path[path.size()-1]);
 		}
@@ -100,13 +101,13 @@ bool CLASS::update(const Pattern& pattern) {
 	// std::cout << "update: " << pattern << endl; // debug
 	search_node++;
 
-	vector<ID> posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
+	auto& precord = cache[pattern];
+	vector<ID> posi = db.gspan.getPosiIds(precord.g2tracers);
 	double score = Calculator::score(db.ys, targets, posi);
 	db.spliter.update(pattern, score);
 	double bound = Calculator::bound(db.ys, targets, posi);
-	cache[pattern].bound = bound / before_mse; // range [0, 1]
 	if (db.spliter.isBounded(bound) or pattern.size() >= setting.maxpat){
-		cache[pattern].prune = true;
+		precord.prune = true;
 		return true;
 	}
 	return false;
@@ -115,36 +116,38 @@ bool CLASS::update(const Pattern& pattern) {
 bool CLASS::expansion() {
 	const Pattern pattern = path[path.size()-1];
 	// std::cout << "expansion: " << pattern << endl; // debug
+	auto& precord = cache[pattern];
 	if (pattern.size() >= setting.maxpat) {
-		cache[pattern].prune = true;
+		precord.prune = true;
 		return false;
 	}
-	if (cache[pattern].count < setting.threshold) {
+	if (precord.count < setting.threshold) {
 		return true;
 	}
 
-	if (!cache[pattern].scan) {
+	if (!precord.scan) {
 		if (db.gspan.scanGspan(pattern)) {
-			cache[pattern].terminal = false;
+			precord.terminal = false;
 			return expand_selection(pattern);
 		} else {
-			cache[pattern].prune = true;
+			precord.prune = true;
 			return false;
 		}
 	} else {
-		if (cache[pattern].childs.size()) {
-			cache[pattern].terminal = false;
+		if (precord.childs.size()) {
+			precord.terminal = false;
 			return expand_selection(pattern);
 		} else {
-			cache[pattern].prune = true;
+			precord.prune = true;
 			return false;
 		}
 	}
 }
 
 bool CLASS::expand_selection(const Pattern& pattern) {
+	auto& precord = cache[pattern];
 	Pattern selected_child;
-	for (auto& c : cache[pattern].childs) {
+	for (auto& c : precord.childs) {
 		if (update(c)) { // prune
 			continue;
 		} else { // not prune
@@ -157,7 +160,7 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 		path.push_back(selected_child);
 		return true;
 	} else {
-		cache[pattern].prune = true;
+		precord.prune = true;
 		return false;
 	}
 }

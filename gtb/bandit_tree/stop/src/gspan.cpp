@@ -69,7 +69,8 @@ bool CLASS::check_pattern(Pattern pattern, GraphToTracers& g2tracers) {
 
 bool CLASS::scanGspan(const Pattern& pattern) {
 	// std::cout << "scanGspan: " << pattern << std::endl; // debug
-	cache[pattern].scan = true;
+	auto& precord = cache[pattern];
+	precord.scan = true;
 	if (pattern.size() >= maxpat) {
 		return false;
 	}
@@ -88,7 +89,7 @@ bool CLASS::scanGspan(const Pattern& pattern) {
 
 	PairSorter b_heap;
 	map<int, PairSorter, std::greater<int>> f_heap;
-	auto& g2tracers = cache[pattern].g2tracers;
+	auto& g2tracers = precord.g2tracers;
 
 	// std::cout << pattern << std::endl; // debug
 	for (auto x = g2tracers.begin(); x != g2tracers.end(); x++) {
@@ -164,7 +165,7 @@ bool CLASS::scanGspan(const Pattern& pattern) {
 		scan_flg = true;
 		cache[child] = CacheRecord(itr->second, childs); // Edgesimulation may initialize new pattern -> not use insert()
 
-		cache[pattern].childs.push_back(child);
+		precord.childs.push_back(child);
 	}
 
 	for (auto itr = f_heap.begin(); itr != f_heap.end(); itr++) {
@@ -179,7 +180,7 @@ bool CLASS::scanGspan(const Pattern& pattern) {
 			}
 			scan_flg = true;
 			cache[child] = CacheRecord(itr2->second, childs); // Edgesimulation may initialize new pattern -> not use insert()
-			cache[pattern].childs.push_back(child);
+			precord.childs.push_back(child);
 		}
 	}
 	return scan_flg;
@@ -197,6 +198,8 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 	do {
 		valid_flg = 0;
 
+		auto& precord = cache[pattern];
+		auto& precord_tmp = cache_tmp[pattern];
 		Pattern origin_pattern = pattern;
 		vector<size_t> rm_path_index;
 		scan_rm(pattern, rm_path_index);
@@ -204,16 +207,16 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 		vector<VertexPair> vpairs(pattern.size());
 		int minlabel = pattern[0].labels.x;
 
-		if (cache[pattern].scan) {
-			if (cache[pattern].childs.size()) {
-				pattern = cache[pattern].childs[Dice::id(cache[pattern].childs.size())];
-				cache_tmp[pattern] = cache[pattern].g2tracers;
+		if (precord.scan) {
+			if (precord.childs.size()) {
+				pattern = precord.childs[Dice::id(precord.childs.size())];
+				precord_tmp = precord.g2tracers;
 				valid_flg = 1;
 			}
 		} else {
-			vector<ID> gids(cache_tmp[pattern].size());
+			vector<ID> gids(precord_tmp.size());
 			int i = 0;
-			for (auto x = cache_tmp[pattern].begin(); x != cache_tmp[pattern].end(); ++x) {
+			for (auto x = precord_tmp.begin(); x != precord_tmp.end(); ++x) {
 				gids[i] = x->first;
 				i++;
 			}
@@ -224,9 +227,9 @@ PandT CLASS::EdgeSimulation(const Pattern& _pattern, const size_t base_pattern_s
 				// random edge expansion
 				EdgeTracer* tracer;
 				DFSCode dcode;
-				vector<ID> tids = Dice::shuffle(cache_tmp[pattern][gid].size());
+				vector<ID> tids = Dice::shuffle(precord_tmp[gid].size());
 				for (auto tid : tids) { 
-					tracer = &(cache_tmp[pattern][gid][tid]);
+					tracer = &(precord_tmp[gid][tid]);
 					// an instance (a sequence of vertex pairs) as vector "vpair"
 
 					vector<char> discovered(g.size(), false); // as bool vector
