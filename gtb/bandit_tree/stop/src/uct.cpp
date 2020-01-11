@@ -20,10 +20,6 @@ void CLASS::run(const vector<ID>& _targets) {
 	search_node = 0;
 
 	while (1) {
-		if (search_node >= search_threshold) {
-			break;
-		}
-
 		path = {root};
 		if (!selection(root)) { // all node is searched
 			break;
@@ -36,6 +32,10 @@ void CLASS::run(const vector<ID>& _targets) {
 				sim_flg = true;
 			}
 		}
+		if (search_node >= search_threshold) {
+			break;
+		}
+
 
 		if (sim_flg) {
 			auto res = simulation(path[path.size()-1], path.size()-1);
@@ -68,8 +68,14 @@ bool CLASS::selection(const Pattern& pattern) {
 
 		if (crecord.count == 0) {
 			if (update(c)) { // prune
+				if (search_node >= search_threshold) {
+					goto THRESHOLD;
+				}
 				continue;
 			} else { // not prune
+				if (search_node >= search_threshold) {
+					goto THRESHOLD;
+				}
 				best_child = c;
 				break;
 			}
@@ -95,6 +101,8 @@ bool CLASS::selection(const Pattern& pattern) {
 			return selection(path[path.size()-1]);
 		}
 	}
+THRESHOLD:
+	return false;
 }
 
 bool CLASS::update(const Pattern& pattern) {
@@ -149,8 +157,14 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 	Pattern selected_child;
 	for (auto& c : precord.childs) {
 		if (update(c)) { // prune
+			if (search_node >= search_threshold) {
+				goto THRESHOLD;
+			}
 			continue;
 		} else { // not prune
+			if (search_node >= search_threshold) {
+				goto THRESHOLD;
+			}
 			selected_child = c;
 			break;
 		}
@@ -163,6 +177,8 @@ bool CLASS::expand_selection(const Pattern& pattern) {
 		precord.prune = true;
 		return false;
 	}
+THRESHOLD:
+	return false;
 }
 
 PandT CLASS::simulation(const Pattern& pattern, const size_t base_pattern_size) {

@@ -32,6 +32,7 @@ vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_
 		return {};
 	}
 	db.uct.run(targets);
+	Log(min_score, best_pattern);
 	// std::cout << "debug best_pattern " << best_pattern << std::endl; // debug
 	if (best_pattern.size() == 0) {
 		valid_flg = false;
@@ -49,6 +50,10 @@ void CLASS::update(const Pattern& pattern, double score) {
 		min_score = score;
 		best_pattern = pattern;
 		Log(min_score, best_pattern);
+	} else if (score == min_score) {
+		if (pattern < best_pattern) {
+			best_pattern = pattern;
+		}
 	}
 }
 

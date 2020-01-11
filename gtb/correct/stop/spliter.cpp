@@ -53,7 +53,6 @@ void CLASS::search() {
 		if (search_node >= search_threshold) {
 			break;
 		}
-
 		const auto& g2tracers = cache[pattern].g2tracers;
 		vector<ID> posi = db.gspan.getPosiIds(g2tracers);
 		update(pattern, posi);
@@ -74,7 +73,6 @@ void CLASS::search_childs(const Pattern& pattern) {
 		if (search_node >= search_threshold) {
 			break;
 		}
-
 		child.push_back(child_dfs);
 		const auto& g2tracers = cache[child].g2tracers;
 		vector<ID> posi = db.gspan.getPosiIds(g2tracers);
@@ -95,6 +93,10 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
+	} else if (score == min_score) {
+		if (pattern < best_pattern) {
+			best_pattern = pattern;
+		}
 	}
 }
 

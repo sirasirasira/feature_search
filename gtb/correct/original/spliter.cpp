@@ -36,6 +36,7 @@ vector<ID> CLASS::run(const vector<ID>& _targets, const size_t tree_count, size_
 		goto G_INVALID;
 	}
 	search();
+	Log(min_score, best_pattern);
 	// std::cout << "debug best_pattern " << best_pattern << std::endl; // debug
 	if (best_pattern.size() == 0) {
 G_INVALID:
@@ -89,6 +90,10 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 		min_score = score;
 		best_pattern = pattern;
 		Log(min_score, best_pattern);
+	} else if (score == min_score) {
+		if (pattern < best_pattern) {
+			best_pattern = pattern;
+		}
 	}
 }
 

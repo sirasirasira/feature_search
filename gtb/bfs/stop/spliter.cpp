@@ -52,7 +52,7 @@ void CLASS::search() {
 	// e1patterns to pq_bound
 	for (auto& pattern : e1patterns) {
 		if (search_node >= search_threshold) {
-			break;
+			goto THRESHOLD;
 		}
 
 		const auto& g2tracers = cache[pattern].g2tracers;
@@ -77,7 +77,7 @@ void CLASS::search() {
 		}
 		for (auto& c : record.childs) {
 			if (search_node >= search_threshold) {
-				break;
+				goto THRESHOLD;
 			}
 
 			pattern.push_back(c);
@@ -88,6 +88,8 @@ void CLASS::search() {
 			pattern.pop_back();
 		}
 	}
+THRESHOLD:
+	return;
 }
 
 void CLASS::update(Pattern pattern, vector<ID> posi) {
@@ -96,6 +98,10 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
+	} else if (score == min_score) {
+		if (pattern < best_pattern) {
+			best_pattern = pattern;
+		}
 	}
 }
 
