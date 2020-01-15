@@ -93,10 +93,6 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
-	} else if (score == min_score) {
-		if (pattern < best_pattern) {
-			best_pattern = pattern;
-		}
 	}
 }
 

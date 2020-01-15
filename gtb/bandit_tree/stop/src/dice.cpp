@@ -3,5 +3,5 @@
 
 std::random_device CLASS::seed_gen;
 //std::mt19937 CLASS::mt(seed_gen());
-std::mt19937 CLASS::mt(1);
+std::mt19937 CLASS::mt(0);
 std::uniform_real_distribution<> CLASS::dice(0.0, 1.0);

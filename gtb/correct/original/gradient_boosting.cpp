@@ -45,6 +45,7 @@ void CLASS::plantFirst() {
 	double mean = sum / (double) db.gdata.num_train;
 	for (ID id = 0; id < db.gdata.size(); id++) {
 		db.y_predictions[id] = mean;
+		//db.y_predictions[id] = db.raw_ys[id];
 	}
 }
 

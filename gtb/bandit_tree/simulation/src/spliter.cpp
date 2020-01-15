@@ -50,10 +50,6 @@ void CLASS::update(const Pattern& pattern, double score) {
 		min_score = score;
 		best_pattern = pattern;
 		Log(min_score, best_pattern);
-	} else if (score == min_score) {
-		if (pattern < best_pattern) {
-			best_pattern = pattern;
-		}
 	}
 }
 

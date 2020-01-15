@@ -59,7 +59,9 @@ void CLASS::search() {
 		vector<ID> posi = db.gspan.getPosiIds(g2tracers);
 		update(pattern, posi);
 		double min_bound = Calculator::bound(db.ys, targets, posi);
-		pq_bound.push(std::make_pair(min_bound, pattern));
+		if (min_score > min_bound) {
+			pq_bound.push(std::make_pair(min_bound, pattern));
+		}
 	}
 
 	// pq_bound search
@@ -84,7 +86,9 @@ void CLASS::search() {
 			auto posi = db.gspan.getPosiIds(cache[pattern].g2tracers);
 			update(pattern, posi);
 			double bound = Calculator::bound(db.ys, targets, posi);
-			pq_bound.push(std::make_pair(bound, pattern));
+			if (min_score > bound) {
+				pq_bound.push(std::make_pair(bound, pattern));
+			}
 			pattern.pop_back();
 		}
 	}
@@ -98,10 +102,6 @@ void CLASS::update(Pattern pattern, vector<ID> posi) {
 	if (score < min_score ) { // old pattern may be used
 		min_score = score;
 		best_pattern = pattern;
-	} else if (score == min_score) {
-		if (pattern < best_pattern) {
-			best_pattern = pattern;
-		}
 	}
 }
 
