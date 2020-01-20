@@ -81,7 +81,7 @@ bool CLASS::selection(const Pattern& pattern) {
 			}
 		} else {
 			ucb = (crecord.sum_score / crecord.count)
-				+ setting.exploration_strength * (sqrt(log(precord.count) / 2 * crecord.count));
+				+ setting.exploration_strength * sqrt(log(precord.count) / (2 * crecord.count));
 			if (ucb > max_ucb) {
 				best_child = c;
 				max_ucb = ucb;
