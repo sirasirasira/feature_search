@@ -5,6 +5,12 @@
 class GradientBoosting {
 	public:
 		void run();
+		void incPosi(int num) {
+			posi_size += num;
+		}
+		void incBoundTime(double time) {
+			bound_time += time;
+		}
 		void incGainCount() {
 			gain_count++;
 		}
@@ -14,25 +20,15 @@ class GradientBoosting {
 		void incBoundCount() {
 			bound_count++;
 		}
-		void addIsMinTime(clock_t time) {
-			is_min_time += time;
-		}
-		void addSimulationTime(clock_t time) {
-			simulation_time += time;
-		}
-		void addScanTime(clock_t time) {
-			scan_time += time;
-		}
 
 	private:
 		vector<ID> train_targets;
 		vector<ID> test_targets;
 		size_t tree_count; // (gradient boosting) from 0, (random forest) from 1
+		int posi_size = 0;
 		int gain_count = 0;
 		int bound_count = 0;
-		clock_t is_min_time = 0;
-		clock_t simulation_time = 0;
-		clock_t scan_time = 0;
+		double bound_time = 0;
 
 		void makeTargets();
 		void plantFirst();

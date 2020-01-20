@@ -59,6 +59,8 @@ void CLASS::calcResidualErrors() {
 
 void CLASS::report() {
 	reportFeatureImportance();
+	cout << "REPORT " << tree_count << " posi_size " << posi_size << endl;
+	cout << "REPORT " << tree_count << " bound_time " << bound_time << endl;
 	db.eva.run(tree_count); // acc, auc
 	cout << "REPORT " << tree_count << " cache_size " << db.spliter.getCache().size() << endl;
 	cout << "REPORT " << tree_count << " gain_count " << gain_count << endl;

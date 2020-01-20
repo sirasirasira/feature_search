@@ -103,6 +103,8 @@ namespace Calculator {
 
 	// assert raw_* is sorted
 	inline double bound(const vector<double>& ys, const vector<ID>& targets, const vector<ID>& posi) {
+		clock_t start = clock();
+		db.gradient_boosting.incPosi(posi.size());
 		db.gradient_boosting.incBoundCount();
 		double min_score = DBL_MAX;
 		multimap<double, ID> sorted_posi_ids;
@@ -127,6 +129,7 @@ namespace Calculator {
 				if (score < min_score) min_score = score;
 			}
 		}
+		db.gradient_boosting.incBoundTime(double(clock() - start) / CLOCKS_PER_SEC);
 		return min_score;
 	}
 }
