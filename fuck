@@ -1,0 +1,20 @@
+#include <iostream>
+#include <map>
+
+using std::map;
+
+
+
+int main(int argc, char** argv) {
+	std::cout << "\e[38;5;0m\e[48;5;40m --- end ---  \e[m" << std::endl; // debug
+
+	map<char, int> m;
+	std::cout << "debug size " << m.size() << std::endl; // debug
+	m['c']++;
+	std::cout << "debug size " << m.size() << std::endl; // debug
+	std::cout << "debug " << m['c'] << std::endl; // debug
+	std::cout << "debug " << m['d'] << std::endl; // debug
+	std::cout << "debug size " << m.size() << std::endl; // debug
+
+	return 0;
+}
